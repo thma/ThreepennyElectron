@@ -38,6 +38,7 @@ executables:
     - ThreepennyElectron
     - threepenny-gui
     - process
+    - filepath
     
 
 tests:
