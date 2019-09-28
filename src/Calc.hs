@@ -129,7 +129,7 @@ applyCmd cmd s =
     (Flush,      EnteredAandOp a _) -> Error a "Can't do this!"
     (Flush,      EnteringB  a op b) -> calc a op (fromRaw b)
     (Flush,      Calculated a op b) -> calc a op b
-    _ -> s
+    _                               -> s
   where
     calc a op b = tryToCalc a op b
                   (Error a)

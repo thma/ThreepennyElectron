@@ -1,17 +1,17 @@
 module Ui where
 
-import           System.Process           (createProcess, shell, ProcessHandle)
-import           System.Info              (os)
-import           GHC.IO.Handle.Types (Handle)
+import           GHC.IO.Handle.Types         (Handle)
+import           System.Info                 (os)
+import           System.Process              (ProcessHandle, createProcess, shell)
 
 import           Control.Monad               (void)
 import           Data.Default                (def)
+import           Graphics.UI.Threepenny      (CallBufferMode (..), Element,
+                                              Event, UI, Window, accumB, attr,
+                                              jsCallBufferMode, jsPort, set,
+                                              sink, text, title, value, ( # ), ( #+ ), (<@))
 import qualified Graphics.UI.Threepenny      as UI
-import           Graphics.UI.Threepenny      (set, attr, title, text, value,
-                                                (#), (#+), (<@),
-                                                Event, Element, UI, Window,
-                                                sink, accumB, jsPort, jsCallBufferMode, CallBufferMode(..))
-import           Graphics.UI.Threepenny.Core (startGUI, defaultConfig)
+import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 
 import           Calc
 
@@ -27,7 +27,7 @@ start port =
     , jsCallBufferMode = BufferRun
     } setup
 
-    
+
 setup :: Window -> UI ()
 setup win = void $ do
     return win # set title "3PennyCalc"
@@ -69,5 +69,5 @@ launchSiteInBrowser =
     "mingw32" -> createProcess  (shell $ "start " ++ url)
     "darwin"  -> createProcess  (shell $ "open " ++ url)
     _         -> createProcess  (shell $ "xdg-open " ++ url)
-    where 
+    where
     url = "http://localhost:8023"
