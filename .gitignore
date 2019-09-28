@@ -20,3 +20,8 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
+node_modules/
+build/ThreepennyElectron.exe
+stack.yaml.lock
+package-lock.json
+*.cabal
