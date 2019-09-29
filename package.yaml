@@ -51,3 +51,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - ThreepennyElectron
+    - hspec
+    - QuickCheck

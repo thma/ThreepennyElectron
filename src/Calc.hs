@@ -1,6 +1,6 @@
 module Calc (
-    State(),
-    populate, display
+    State(..),
+    populate, display, initialState
     ) where
 
 import           Data.Default (Default (def))
@@ -20,11 +20,14 @@ data State = EnteringA     Raw                      -- raw A
            | EnteringB     Double  Operation Raw    -- A, Op, raw B
            | Calculated    Double  Operation Double -- A, Op, B
            | Error         Double  String           -- A, Message
-           deriving Show
+           deriving (Show, Eq)
 
 
 instance Default State where
   def = EnteringA (0, False)
+  
+initialState :: State
+initialState = def
 
 
 display :: State -> String
