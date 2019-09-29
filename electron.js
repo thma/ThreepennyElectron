@@ -26,9 +26,10 @@ freeport((err, port) => {
   function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
-      width: 280,
-      height: 180,
+      width: 420,
+      height: 345,
       maximizable: false,
+      resizable: false,
       icon: 'calc.ico',
       webPreferences: { nodeIntegration: true },
     });

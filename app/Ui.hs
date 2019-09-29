@@ -41,13 +41,14 @@ setup win =
                     # set value "0"
     buttons <- mapM (mapM mkButton) buttonLabels
 
-    UI.getBody win #+
-      [ UI.div #. "ui raised very padded text container segment" #+
-        [ UI.div #. "ui input focus" #+ [element out]
-        , UI.table #+
-            map (UI.row . map element) buttons
-        ]
-      ]
+    UI.getBody win # set (attr "style") "overflow: hidden" #+
+       [ UI.div #. "ui raised very padded text container segment" #+
+          [ UI.div #. "ui input focus" #+ [element out]
+          , UI.table #+
+              map (UI.row . map element) buttons
+          ]
+       ]
+       
     let clicks = buttonClicks (zip (concat buttons) (concat buttonLabels))
         commands = fmap populate clicks
     calcBehaviour <- accumB (def :: State) commands
@@ -62,7 +63,14 @@ setup win =
       where
         makeClick (e, s) = UI.pure s <@ UI.click e
     buttonLabels :: [[String]]
-    buttonLabels = map words $ lines "7 8 9 CE C\n4 5 6 + -\n1 2 3 * /\n . 0 ="
+    buttonLabels = 
+      [
+        ["7", "8", "9", "CE", "C"]
+      , ["4", "5", "6", "+",  "-"]
+      , ["1", "2", "3", "*",  "/"]
+      , [".", "0", "="]
+      ]
+      -- map words $ lines "7 8 9 CE C\n4 5 6 + -\n1 2 3 * /\n . 0 ="
 
 
 -- | convenience function that opens the 3penny UI in the default web browser
