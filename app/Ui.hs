@@ -11,7 +11,7 @@ import           Graphics.UI.Threepenny      hiding (map, start)
 import qualified Graphics.UI.Threepenny      as UI
 import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 
-import           Calc                        (State, populate, display )
+import           Calc                        (State, populate, display, initialState )
 import           Paths                       (getStaticDir)
 
 -- | main entry point from electron.js launch script
@@ -55,7 +55,7 @@ setup win =
     -- define event handling for button clicks
     let clicks   = buttonClicks (zip (concat buttons) (concat buttonLabels))
         commands = fmap populate clicks
-        state    = def :: State
+        state    = initialState --def :: State
     calcBehaviour <- accumB state commands
     let outText  = fmap display calcBehaviour
     element outputBox # sink value outText
@@ -72,7 +72,7 @@ setup win =
         ["7", "8", "9", "CE", "C"]
       , ["4", "5", "6", "+",  "-"]
       , ["1", "2", "3", "*",  "/"]
-      , [".", "0", "="]
+      , [".", "0", "="] -- , "pi"]
       ]
 
 

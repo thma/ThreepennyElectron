@@ -1,25 +1,32 @@
 module Calc (
     State(..),
-    populate, display, initialState
+    populate, display, initialState, bd
     ) where
 
 import           Data.Default (Default (def))
+import           Data.Number.BigFloat
+
+type BigDecimal = BigFloat Prec10
+
+
+bd :: BigDecimal -> BigDecimal
+bd = id
 
 data Operation = Add | Sub | Mul | Div deriving (Show, Eq)
 
 data Command = Digit Char
              | Dot
              | Operation Operation
-             | Flush | Clear | ClearError
+             | Flush | Clear | ClearError | Pi
              deriving (Show, Eq)
 
-type Raw = (Double, Bool)
+type Raw = (BigDecimal, Bool)
 
 data State = EnteringA     Raw                      -- raw A
-           | EnteredAandOp Double  Operation        -- A, Op
-           | EnteringB     Double  Operation Raw    -- A, Op, raw B
-           | Calculated    Double  Operation Double -- A, Op, B
-           | Error         Double  String           -- A, Message
+           | EnteredAandOp BigDecimal  Operation        -- A, Op
+           | EnteringB     BigDecimal  Operation Raw    -- A, Op, raw B
+           | Calculated    BigDecimal  Operation BigDecimal -- A, Op, B
+           | Error         BigDecimal  String           -- A, Message
            deriving (Show, Eq)
 
 
@@ -40,10 +47,10 @@ display s =
     Error         _ msg -> msg
 
 
-fromRaw :: Raw -> Double
+fromRaw :: Raw -> BigDecimal
 fromRaw = fst
 
-asRaw :: Double -> Raw
+asRaw :: BigDecimal -> Raw
 asRaw x = (x, x /= (fromInteger . truncate) x)
 
 
@@ -59,6 +66,7 @@ parseInput x =
     "="  -> Flush
     "C"  -> Clear
     "CE" -> ClearError
+    "pi" -> Pi
 
 
 populate :: String -> State -> State
@@ -73,34 +81,38 @@ populate i =
 addDigit :: Char -> State -> State
 addDigit x s =
   case s of
-    (EnteringA a)        -> EnteringA (update a)
-    (EnteringB a op b)   -> EnteringB a op (update b)
-    (EnteredAandOp a op) -> EnteringB a op (asRaw x')
-    Calculated {}        -> EnteringA (asRaw x')
-    _                    -> s
+    -- (EnteringA (pi, _))      -> s
+    (EnteringA a)            -> EnteringA (update a)
+    -- (EnteringB a op (pi, _)) -> s
+    (EnteringB a op b)       -> EnteringB a op (update b)
+    (EnteredAandOp a op)     -> EnteringB a op (asRaw x')
+    Calculated {}            -> EnteringA (asRaw x')
+    _                        -> s
   where
     update (a, False) = (a * 10 + x', False)
     update (a, True)  = let (a', b) = properFraction a
-                        in (fromInteger a' + (x' + b / 10) / 10, True)
+                        in (fromInteger a' + (x' + b / 10) / 10, True) -- just dividing by 10 seems bogus we have to add to the END of the fractional digits not replace the first!
 
-    x' = read [x] :: Double
+    x' = fromInteger (read [x] :: Integer)
 
 
 addDot :: State -> State
 addDot s =
   case s of
-    (EnteringA a)      -> EnteringA (dotted a)
-    (EnteringB a op b) -> EnteringB a op (dotted b)
-    _                  -> s
+    -- (EnteringA (pi, _))      -> s
+    (EnteringA a)            -> EnteringA (dotted a)
+    --(EnteringB a op (pi, _)) -> s
+    (EnteringB a op b)       -> EnteringB a op (dotted b)
+    _                        -> s
   where
     dotted (a, _) = (a, True)
 
 
-tryToCalc :: Double -> Operation -> Double -- A op B
+tryToCalc :: BigDecimal -> Operation -> BigDecimal -- A op B
           -> (String -> a)                 -- error handler
-          -> (Double -> a)                 -- result handler
-          -> a
-tryToCalc _ Div b mkError _  | b == 0 = mkError "Dision by Zero!"
+          -> (BigDecimal -> a)             -- result handler
+          -> a 
+tryToCalc _ Div b mkError _  | b == 0 = mkError "Division by Zero!"
 tryToCalc a op  b _ mkResult =
   let f = case op of
             Add -> (+)
@@ -132,6 +144,8 @@ applyCmd cmd s =
     (Flush,      EnteredAandOp a _) -> Error a "Can't do this!"
     (Flush,      EnteringB  a op b) -> calc a op (fromRaw b)
     (Flush,      Calculated a op b) -> calc a op b
+    --(Pi,         EnteringA _)       -> EnteringA (asRaw pi)
+    --(Pi,         EnteredAandOp a op) -> EnteringB  a op (pi, False)
     _                               -> s
   where
     calc a op b = tryToCalc a op b
