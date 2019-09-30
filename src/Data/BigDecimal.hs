@@ -1,4 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
 {- | This module defines the type 'BigDecimal' which provides a representation of arbitrary precision decimal numbers.
      'BigDecimal' is a native Haskell implementation based on arbitrary sized 'Integer' values.
      The implementation was inspired by Java BigDecimals.
@@ -35,6 +34,7 @@ module Data.BigDecimal
   ( BigDecimal (..)
   , RoundingMode (..)
   , MathContext
+  , bd
   , getScale
   , getValue
   , precision
@@ -88,6 +88,9 @@ getValue (BigDecimal v _) = v
 --   If 'Nothing' is given as precision all decimal digits are to be preserved, that is precision is not limited.
 type MathContext = (RoundingMode, Maybe Integer)
 
+bd :: BigDecimal -> BigDecimal
+bd = id
+
 instance Num BigDecimal where
   a + b                   = plus (a, b)
   a * b                   = mul (a, b)
@@ -103,8 +106,8 @@ instance Eq BigDecimal where
 
 instance Fractional BigDecimal where
   -- default division rounds up and does not limit precision
-  a / b = nf $ divide (matchScales (a, b)) (HALF_UP, Just 20)
-  fromRational ratio@(x :% y) = fromRatio ratio (HALF_UP, Just 20)
+  a / b = nf $ divide (matchScales (a, b)) (HALF_UP, Nothing)
+  fromRational ratio@(x :% y) = fromRatio ratio (HALF_UP, Nothing)
 
 -- | creates a BigDecimal from a 'Rational' value. 'MathContext' defines precision and rounding mode.
 fromRatio :: Rational -> MathContext -> BigDecimal
@@ -119,14 +122,11 @@ instance Ord BigDecimal where
     in compare valA valB
 
 instance RealFrac BigDecimal where
-  properFraction bd = (proper, fraction) where
-    (proper, fraction) =
-      let rdm = (DOWN, Just 0)
-          properBD = roundBD bd rdm
-          BigDecimal properInt _ = properBD
-          fractionBD = bd - properBD
-       in (fromInteger properInt, fractionBD)
-
+  properFraction bd = 
+    let properBD = roundBD bd (DOWN, Just 0)
+        BigDecimal properInt _ = properBD
+        fractionBD = bd - properBD
+     in (fromInteger properInt, fractionBD)
 
 -- | add two BigDecimals
 plus :: (BigDecimal, BigDecimal) -> BigDecimal

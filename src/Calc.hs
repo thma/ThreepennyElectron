@@ -42,7 +42,6 @@ fromRaw = fst
 asRaw :: BigDecimal -> Raw
 asRaw x = (x, x /= (fromInteger . truncate) x)
 
-
 parseInput :: String -> Command
 parseInput (x:_) | x `elem` "0123456789" = Digit x
 parseInput x =
@@ -69,21 +68,24 @@ populate i =
 
 addDigit :: Char -> State -> State
 addDigit x s =
-  case s of
+  case s
     -- (EnteringA (pi, _))      -> s
-    (EnteringA a)            -> EnteringA (update a)
+        of
+    (EnteringA a) -> EnteringA (update a)
     -- (EnteringB a op (pi, _)) -> s
-    (EnteringB a op b)       -> EnteringB a op (update b)
-    (EnteredAandOp a op)     -> EnteringB a op (asRaw x')
-    Calculated {}            -> EnteringA (asRaw x')
-    _                        -> s
+    (EnteringB a op b) -> EnteringB a op (update b)
+    (EnteredAandOp a op) -> EnteringB a op (asRaw x')
+    Calculated {} -> EnteringA (asRaw x')
+    _ -> s
   where
     update (a, False) = (a * 10 + x', False)
-    update (a, True)  = let (a', b) = properFraction a
-                        in (fromInteger a' + (x' + b / 10) / 10, True) -- just dividing by 10 seems bogus we have to add to the END of the fractional digits not replace the first!
-
+    update (a, True) =
+      let (a', b) = properFraction a
+          BigDecimal _ scale = a
+          aAsString = if x == '0' then toString a else toString (trim 0 a) 
+          dotString = if b == 0 then "." else ""
+       in (fromString $ aAsString ++ dotString ++ [x], True)
     x' = fromInteger (read [x] :: Integer)
-
 
 addDot :: State -> State
 addDot s =

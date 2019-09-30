@@ -8,6 +8,7 @@ import           Test.Hspec.QuickCheck (modifyMaxSize, modifyMaxSuccess)
 import           Test.QuickCheck
 
 import           Calc
+import           Data.BigDecimal
 
 -- `main` is here so that this module can be run from GHCi on its own.  It is
 -- not needed for automatic spec discovery.
@@ -29,5 +30,8 @@ spec =
       populate "3" (EnteringA (33.3,True)) `shouldBe` EnteringA (33.33,True)  
     it "adds second fractional digits after decimal point" $
       populate "3" (EnteringA (333.33,True)) `shouldBe` EnteringA (333.333,True)          
-      
+    it "adds zeros as fractional digits" $
+      populate "0" (EnteringA (333.33,True)) `shouldBe` EnteringA (333.330,True)
+    it "maintains zeros as fractional digits" $
+      populate "3" (populate "0" (EnteringA (333.33,True))) `shouldBe` EnteringA (333.3303,True)            
       -- property $ \bd -> (fromString . toString) bd === (bd :: BigDecimal)
