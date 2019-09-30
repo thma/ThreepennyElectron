@@ -4,9 +4,9 @@ module Calc (
     ) where
 
 import           Data.Default (Default (def))
-import           Data.Number.BigFloat
-
-type BigDecimal = BigFloat Prec10
+--import           Data.Number.BigFloat
+import           Data.BigDecimal
+--type BigDecimal = BigFloat Prec10
 
 
 bd :: BigDecimal -> BigDecimal
@@ -40,10 +40,10 @@ initialState = def
 display :: State -> String
 display s =
   case s of
-    EnteringA     a     -> show (fromRaw a)
-    EnteredAandOp a _   -> show a
-    EnteringB     _ _ b -> show (fromRaw b)
-    Calculated    a _ _ -> show a
+    EnteringA     a     -> toString (fromRaw a)
+    EnteredAandOp a _   -> toString a
+    EnteringB     _ _ b -> toString (fromRaw b)
+    Calculated    a _ _ -> toString a
     Error         _ msg -> msg
 
 

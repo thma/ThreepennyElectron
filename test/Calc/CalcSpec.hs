@@ -24,6 +24,10 @@ spec =
     it "adds first fractional digit after decimal point" $
       populate "3" (EnteringA (33.0,True)) `shouldBe` EnteringA (33.3,True)
     it "adds second fractional digits after decimal point" $
-      populate "3" (EnteringA (33.3,True)) `shouldBe` EnteringA (33.33,True)      
+      populate "3" (EnteringA (3.3,True)) `shouldBe` EnteringA (3.33,True)   
+    it "adds second fractional digits after decimal point" $
+      populate "3" (EnteringA (33.3,True)) `shouldBe` EnteringA (33.33,True)  
+    it "adds second fractional digits after decimal point" $
+      populate "3" (EnteringA (333.33,True)) `shouldBe` EnteringA (333.333,True)          
       
       -- property $ \bd -> (fromString . toString) bd === (bd :: BigDecimal)
