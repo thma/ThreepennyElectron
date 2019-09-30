@@ -6,7 +6,6 @@ import           System.Process              (ProcessHandle, createProcess,
                                               shell)
 
 import           Control.Monad               (void)
-import           Data.Default                (def)
 import           Graphics.UI.Threepenny      hiding (map, start)
 import qualified Graphics.UI.Threepenny      as UI
 import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
@@ -55,7 +54,7 @@ setup win =
     -- define event handling for button clicks
     let clicks   = buttonClicks (zip (concat buttons) (concat buttonLabels))
         commands = fmap populate clicks
-        state    = initialState --def :: State
+        state    = initialState
     calcBehaviour <- accumB state commands
     let outText  = fmap display calcBehaviour
     element outputBox # sink value outText

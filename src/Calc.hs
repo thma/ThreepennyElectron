@@ -1,16 +1,9 @@
 module Calc (
     State(..),
-    populate, display, initialState, bd
+    populate, display, initialState
     ) where
 
-import           Data.Default (Default (def))
---import           Data.Number.BigFloat
 import           Data.BigDecimal
---type BigDecimal = BigFloat Prec10
-
-
-bd :: BigDecimal -> BigDecimal
-bd = id
 
 data Operation = Add | Sub | Mul | Div deriving (Show, Eq)
 
@@ -28,13 +21,9 @@ data State = EnteringA     Raw                      -- raw A
            | Calculated    BigDecimal  Operation BigDecimal -- A, Op, B
            | Error         BigDecimal  String           -- A, Message
            deriving (Show, Eq)
-
-
-instance Default State where
-  def = EnteringA (0, False)
   
 initialState :: State
-initialState = def
+initialState = EnteringA (0, False)
 
 
 display :: State -> String
@@ -138,7 +127,7 @@ applyCmd :: Command -> State -> State
 applyCmd cmd s =
   case (cmd, s) of
     (ClearError, Error a _)         -> EnteringA (asRaw a)
-    (Clear,      _)                 -> def
+    (Clear,      _)                 -> initialState
     (_,          Error _ _)         -> s
     (Flush,      EnteringA _)       -> s
     (Flush,      EnteredAandOp a _) -> Error a "Can't do this!"
