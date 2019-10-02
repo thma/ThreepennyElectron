@@ -25,3 +25,6 @@ build/ThreepennyElectron.exe
 stack.yaml.lock
 package-lock.json
 *.cabal
+.idea/
+*.iml
+out/
