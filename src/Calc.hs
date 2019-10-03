@@ -23,7 +23,7 @@ data State = EnteringA     Raw                      -- raw A
            deriving (Show, Eq)
   
 initialState :: State
-initialState = EnteringA (0, False)
+initialState = EnteringA (BigDecimal 0 0, False)
 
 
 display :: State -> String
@@ -71,21 +71,21 @@ addDigit x s =
   case s
     -- (EnteringA (pi, _))      -> s
         of
-    (EnteringA a) -> EnteringA (update a)
+    (EnteringA a)        -> EnteringA (update a)
     -- (EnteringB a op (pi, _)) -> s
-    (EnteringB a op b) -> EnteringB a op (update b)
+    (EnteringB a op b)   -> EnteringB a op (update b)
     (EnteredAandOp a op) -> EnteringB a op (asRaw x')
-    Calculated {} -> EnteringA (asRaw x')
+    Calculated {}        -> EnteringA (asRaw x')
     _ -> s
   where
-    update (a, False) = (a * 10 + x', False)
+    update (a, False) = (fromString $ toString a ++ [x], False)
     update (a, True) =
-      let (a', b) = properFraction a
-          BigDecimal _ scale = a
-          aAsString = if x == '0' then toString a else toString (trim 0 a) 
-          dotString = if b == 0 then "." else ""
-       in (fromString $ aAsString ++ dotString ++ [x], True)
-    x' = fromInteger (read [x] :: Integer)
+      let BigDecimal intValue scale = a
+          intValue' = 10*intValue + xInt
+          scale'    = scale + 1
+       in (BigDecimal intValue' scale', True)
+    xInt = read [x] :: Integer
+    x' = fromInteger xInt
 
 addDot :: State -> State
 addDot s =
