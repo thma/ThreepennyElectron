@@ -145,7 +145,7 @@ divide :: (BigDecimal, BigDecimal)  -- ^  the tuple of dividend and divisor. I.e
        -> BigDecimal                -- ^ the resulting BigDecimal
 divide (a, b) (rMode, prefScale) =
   let (BigDecimal numA _, BigDecimal numB _) = matchScales (a, b)
-      maxPrecision = fromMaybe (precision a + round (fromInteger (precision b) * 10 / 3)) prefScale
+      maxPrecision = fromMaybe ((precision a + precision b) * 4) prefScale
   in trim maxPrecision (BigDecimal (divUsing rMode (numA * (10 :: Integer) ^ maxPrecision) numB) maxPrecision)
 
 -- | divide two correctly scaled Integers and apply the RoundingMode
