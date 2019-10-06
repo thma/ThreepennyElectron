@@ -1,17 +1,47 @@
 module Calc (
     State(..),
-    populate, display, initialState
+    populate, display, initialState, Operation(..), Command(..), commandsToSymbols, symbolsToCommands, Symbol, sym
     ) where
 
 import           Data.BigDecimal
+import           Data.Map (Map)
+import qualified Data.Map as Map
+import           Data.Maybe (fromMaybe)
 
-data Operation = Add | Sub | Mul | Div deriving (Show, Eq)
+data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
 
 data Command = Digit Char
              | Dot
              | Operation Operation
              | Flush | Clear | ClearError | Pi
-             deriving (Show, Eq)
+             deriving (Show, Eq, Ord)
+
+allCommands :: [Command]
+allCommands = [Digit '0', Digit '1', Digit '2', Digit '3', Digit '4', Digit '5', Digit '6', Digit '7', Digit '8', Digit '9',
+               Operation Add, Operation Sub, Operation Mul, Operation Div, Dot, Flush, Clear, ClearError, Pi]
+
+type Symbol = String
+allSymbols :: [Symbol]
+allSymbols = ["0","1","2","3","4","5","6","7","8","9","+","-","*","/",".","=","C","CE","pi"]
+
+commandsToSymbols :: Map Command Symbol
+commandsToSymbols = Map.fromList $ zip allCommands allSymbols
+
+symbolsToCommands :: Map Symbol Command
+symbolsToCommands = Map.fromList $ zip allSymbols allCommands
+
+symFor :: Command -> Symbol
+symFor c = fromMaybe (fail "invalid Command " ++ show c) (Map.lookup c commandsToSymbols)
+
+comFor :: Symbol -> Maybe Command
+comFor s = Map.lookup s symbolsToCommands
+
+sym :: String -> Symbol
+sym s = 
+  case comFor s of
+    Just c ->  symFor c
+    Nothing -> fail "invalid symbol " ++ s
+
 
 type Raw = (BigDecimal, Bool)
 
