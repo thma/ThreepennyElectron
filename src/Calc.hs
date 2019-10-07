@@ -1,46 +1,21 @@
+{-# OPTIONS_GHC -fwarn-incomplete-patterns #-} -- ensure that all possible Commands are covered in pattern matching
 module Calc (
     State(..),
-    populate, display, initialState, Operation(..), Command(..), commandsToSymbols, symbolsToCommands, Symbol, sym
+    populate, display, initialState, Operation(..), Command(..), Digit(..), toLabel -- , commandsToSymbols, symbolsToCommands, Symbol, sym
     ) where
 
 import           Data.BigDecimal
-import           Data.Map (Map)
-import qualified Data.Map as Map
 import           Data.Maybe (fromMaybe)
 
 data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
 
-data Command = Digit Char
+data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
+
+data Command = Digit Digit
              | Dot
              | Operation Operation
              | Flush | Clear | ClearError | Pi
              deriving (Show, Eq, Ord)
-
-allCommands :: [Command]
-allCommands = [Digit '0', Digit '1', Digit '2', Digit '3', Digit '4', Digit '5', Digit '6', Digit '7', Digit '8', Digit '9',
-               Operation Add, Operation Sub, Operation Mul, Operation Div, Dot, Flush, Clear, ClearError, Pi]
-
-type Symbol = String
-allSymbols :: [Symbol]
-allSymbols = ["0","1","2","3","4","5","6","7","8","9","+","-","*","/",".","=","C","CE","pi"]
-
-commandsToSymbols :: Map Command Symbol
-commandsToSymbols = Map.fromList $ zip allCommands allSymbols
-
-symbolsToCommands :: Map Symbol Command
-symbolsToCommands = Map.fromList $ zip allSymbols allCommands
-
-symFor :: Command -> Symbol
-symFor c = fromMaybe (fail "invalid Command " ++ show c) (Map.lookup c commandsToSymbols)
-
-comFor :: Symbol -> Maybe Command
-comFor s = Map.lookup s symbolsToCommands
-
-sym :: String -> Symbol
-sym s = 
-  case comFor s of
-    Just c ->  symFor c
-    Nothing -> fail "invalid symbol " ++ s
 
 
 type Raw = (BigDecimal, Bool)
@@ -73,19 +48,49 @@ asRaw :: BigDecimal -> Raw
 asRaw x = (x, x /= (fromInteger . truncate) x)
 
 parseInput :: String -> Command
-parseInput (x:_) | x `elem` "0123456789" = Digit x
-parseInput x =
-  case x of
-    "."  -> Dot
-    "+"  -> Operation Add
-    "-"  -> Operation Sub
-    "*"  -> Operation Mul
-    "/"  -> Operation Div
-    "="  -> Flush
-    "C"  -> Clear
-    "CE" -> ClearError
-    "pi" -> Pi
+parseInput x = case x of
+  "0"  -> Digit Zero
+  "1"  -> Digit One
+  "2"  -> Digit Two
+  "3"  -> Digit Three
+  "4"  -> Digit Four
+  "5"  -> Digit Five
+  "6"  -> Digit Six
+  "7"  -> Digit Seven
+  "8"  -> Digit Eight
+  "9"  -> Digit Nine
+  "."  -> Dot
+  "+"  -> Operation Add
+  "-"  -> Operation Sub
+  "*"  -> Operation Mul
+  "/"  -> Operation Div
+  "="  -> Flush
+  "C"  -> Clear
+  "CE" -> ClearError
+  "pi" -> Pi
+  _    -> undefined
 
+toLabel :: Command -> String
+toLabel c = case c of
+  Digit Zero    -> "0"
+  Digit One     -> "1"
+  Digit Two     -> "2"
+  Digit Three   -> "3"
+  Digit Four    -> "4"
+  Digit Five    -> "5"
+  Digit Six     -> "6"
+  Digit Seven   -> "7"
+  Digit Eight   -> "8"
+  Digit Nine    -> "9"
+  Dot           -> "."
+  Operation Add -> "+"
+  Operation Sub -> "-"
+  Operation Mul -> "*"
+  Operation Div -> "/"
+  Flush         -> "="
+  Clear         -> "C"
+  ClearError    -> "CE"
+  Pi            -> "pi"
 
 populate :: String -> State -> State
 populate i =
@@ -96,7 +101,7 @@ populate i =
     cmd          -> applyCmd cmd
 
 
-addDigit :: Char -> State -> State
+addDigit :: Digit -> State -> State
 addDigit x s =
   case s
     -- (EnteringA (pi, _))      -> s
@@ -108,14 +113,16 @@ addDigit x s =
     Calculated {}        -> EnteringA (asRaw x')
     _ -> s
   where
-    update (a, False) = (fromString $ toString a ++ [x], False)
+    update (a, False) = (fromString $ toString a ++ num x, False)
     update (a, True) =
       let BigDecimal intValue scale = a
           intValue' = 10*intValue + xInt
           scale'    = scale + 1
        in (BigDecimal intValue' scale', True)
-    xInt = read [x] :: Integer
+    xInt = read (num x) :: Integer
     x' = fromInteger xInt
+    --toString :: Digit -> String
+    num x = toLabel (Digit x)
 
 addDot :: State -> State
 addDot s =

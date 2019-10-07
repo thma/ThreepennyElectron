@@ -1,9 +1,6 @@
 {-# LANGUAGE CPP #-}
 module Paths (getStaticDir) where
 
-import Control.Monad
-import System.FilePath
-
 #if defined(CABAL)
 -- | using cabal
 import qualified Paths_deva (getDataDir)

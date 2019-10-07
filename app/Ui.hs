@@ -13,8 +13,6 @@ import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 import           Calc                        --(State, populate, display, initialState )
 import           Paths                       (getStaticDir)
 import           Data.Char                   (toLower)
-import           Data.Map (Map)
-import qualified Data.Map as Map
 
 -- | main entry point from electron.js launch script
 start :: Int -> IO ()
@@ -82,12 +80,12 @@ setup win =
         where
           makeClick (e, s) = UI.pure s <@ UI.click e
               
-      buttonLabels :: [[(Symbol, Color)]]
+      buttonLabels :: [[(String, Color)]]
       buttonLabels =
-        [ [(sym "7", Grey), (sym "8", Grey), (sym "9", Grey), (sym "CE", Orange), (sym "C", Orange)]
-        , [(sym "4", Grey), (sym "5", Grey), (sym "6", Grey), (sym "+", Brown), (sym "-", Brown)]
-        , [(sym "1", Grey), (sym "2", Grey), (sym "3", Grey), (sym "*", Brown), (sym "/", Brown)]
-        , [(sym ".", Grey), (sym "0", Grey), (sym "=", Black)] ]
+        [ [(toLabel $ Digit Seven, Grey), (toLabel $ Digit Eight, Grey), (toLabel $ Digit Nine, Grey),  (toLabel ClearError, Orange),     (toLabel Clear, Orange)]
+        , [(toLabel $ Digit Four, Grey),  (toLabel $ Digit Five, Grey),  (toLabel $ Digit Six, Grey),   (toLabel $ Operation Add, Brown), (toLabel $ Operation Sub, Brown)]
+        , [(toLabel $ Digit One, Grey),   (toLabel $ Digit Two, Grey),   (toLabel $ Digit Three, Grey), (toLabel $ Operation Mul, Brown), (toLabel $ Operation Div, Brown)]
+        , [(toLabel Dot, Grey),           (toLabel $ Digit Zero, Grey),  (toLabel Flush, Black)] ]
 
 
 -- | Button colors
@@ -97,8 +95,8 @@ data Color = Grey | Orange | Brown | Black deriving (Show)
 launchSiteInBrowser:: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
 launchSiteInBrowser =
     case os of
-    "mingw32" -> createProcess  (shell $ "start " ++ url)
-    "darwin"  -> createProcess  (shell $ "open " ++ url)
-    _         -> createProcess  (shell $ "xdg-open " ++ url)
-    where
-    url = "http://localhost:8023"
+    "mingw32" -> createProcess  (shell $ "start "    ++ url)
+    "darwin"  -> createProcess  (shell $ "open "     ++ url)
+    _         -> createProcess  (shell $ "xdg-open " ++ url)   
+    where url = "http://localhost:8023"
+
