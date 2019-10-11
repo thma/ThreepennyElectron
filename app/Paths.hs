@@ -3,10 +3,10 @@ module Paths (getStaticDir) where
 
 #if defined(CABAL)
 -- | using cabal
-import qualified Paths_deva (getDataDir)
+import qualified Paths_ThreepennyElectron (getDataDir)
 
 getStaticDir :: IO FilePath
-getStaticDir = (</> "static") `liftM` Paths_deva.getDataDir
+getStaticDir = (</> "static") `liftM` Paths_ThreepennyElectron.getDataDir
 
 #else
 -- | using GHCi

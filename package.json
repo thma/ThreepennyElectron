@@ -1,9 +1,29 @@
 {
   "name": "ThreepennyElectron",
+  "version": "1.0.0",
+  "description": "A ThreepennyGUI + Electron based Pocket Calculator",
   "main": "electron.js",
+  "scripts": {
+    "start": "./node_modules/.bin/electron electron.js",
+    "pack": "electron-packager .",
+    "postpack": "ncp static ThreepennyElectron-win32-x64/static"
+  },
+  "repository": "https://github.com/thma/ThreepennyElectron",
+  "keywords": [
+    "Electron",
+    "Threepenny GUI",
+    "Calculator",
+    "tutorial",
+    "demo"
+  ],
+  "author": "Thomas Mahler",
+  "license": "Apache-2.0",
   "dependencies": {
     "electron": "^1.6.1",
+    "electron-packager": "^14.0.6",
     "freeport": "^1.0.5",
-    "wait-on": "^2.0.2"
+    "wait-on": "^2.0.2",
+    "shelljs": "^0.8.3",
+    "ncp": "^2.0.0"
   }
 }

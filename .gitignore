@@ -28,3 +28,5 @@ package-lock.json
 .idea/
 *.iml
 out/
+build/
+ThreepennyElectron-win32-x64/

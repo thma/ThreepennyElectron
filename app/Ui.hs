@@ -82,11 +82,12 @@ setup win =
               
       buttonLabels :: [[(String, Color)]]
       buttonLabels =
-        [ [(toLabel $ Digit Seven, Grey), (toLabel $ Digit Eight, Grey), (toLabel $ Digit Nine, Grey),  (toLabel ClearError, Orange),     (toLabel Clear, Orange)]
+        [ [(toLabel $ Digit Seven, Grey), (toLabel $ Digit Eight, Grey), (toLabel $ Digit Nine, Grey),  (toLabel $ ClearError, Orange),   (toLabel $ Clear, Orange)]
         , [(toLabel $ Digit Four, Grey),  (toLabel $ Digit Five, Grey),  (toLabel $ Digit Six, Grey),   (toLabel $ Operation Add, Brown), (toLabel $ Operation Sub, Brown)]
         , [(toLabel $ Digit One, Grey),   (toLabel $ Digit Two, Grey),   (toLabel $ Digit Three, Grey), (toLabel $ Operation Mul, Brown), (toLabel $ Operation Div, Brown)]
-        , [(toLabel Dot, Grey),           (toLabel $ Digit Zero, Grey),  (toLabel Flush, Black)] ]
+        , [(toLabel $ Dot, Grey),         (toLabel $ Digit Zero, Grey),  (toLabel $ Flush, Black)] ]
 
+--lbl = toLabel ($)
 
 -- | Button colors
 data Color = Grey | Orange | Brown | Black deriving (Show)

@@ -25,3 +25,35 @@ npm install electron-packager
 ./node_modules/.bin/electron-packager .
 
 ./node_modules/.bin/electron-packager . --ignore=app --ignore=src
+
+
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "~1.6.2",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0"
+  },
+  "dependencies": {
+    "electron": "^1.6.2",
+    "favicon-getter": "^1.1.3",
+    "jsonfile": "^2.4.0",
+    "uuid": "^3.0.1"
+  }
+}
