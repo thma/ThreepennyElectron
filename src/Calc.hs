@@ -4,12 +4,9 @@ module Calc (
     populate, display, initialState, Operation(..), Command(..), Digit(..), toLabel -- , commandsToSymbols, symbolsToCommands, Symbol, sym
     ) where
 
---import           Data.BigDecimal
---import           Data.Maybe (fromMaybe)
+data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
 
 data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
-
-data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
 
 data Command = Digit Digit
              | Dot
@@ -23,7 +20,7 @@ toString = show
 
 type Raw = (String, Bool)
 
-data State = EnteringA     Raw                      -- raw A
+data State = EnteringA     Raw                          -- raw A
            | EnteredAandOp BigDecimal  Operation        -- A, Op
            | EnteringB     BigDecimal  Operation Raw    -- A, Op, raw B
            | Calculated    BigDecimal  Operation BigDecimal -- A, Op, B
@@ -116,24 +113,12 @@ addDigit x s =
     Calculated {}        -> EnteringA (asRaw x')
     _ -> s
   where
-    update (a, False) = (a ++ num x, False)--(a * 10 + x', False)
-    update (a, True)  = (a ++ num x, True)--let (a', b) = properFraction a
-                         --in (fromInteger a' + (x' + b / 10) / 10, True)
-   
+    update (a, False) = (a ++ num x, False)
+    update (a, True)  = (a ++ num x, True)   
     num x = toLabel (Digit x)
     xInt = read (num x) :: Integer
     x' = fromInteger xInt
     
---    update (a, False) = (fromString $ toString a ++ num x, False)
---    update (a, True) =
---      let BigDecimal intValue scale = a
---          intValue' = 10*intValue + xInt
---          scale'    = scale + 1
---       in (BigDecimal intValue' scale', True)
---    xInt = read (num x) :: Integer
---    x' = fromInteger xInt
---    --toString :: Digit -> String
---    num x = toLabel (Digit x)
 
 addDot :: State -> State
 addDot s =
@@ -144,7 +129,8 @@ addDot s =
     (EnteringB a op b)       -> EnteringB a op (dotted b)
     _                        -> s
   where
-    dotted (a, _) = (a ++ ".", True)
+    dotted (a, False) = (a ++ ".", True)
+    dotted (a, True) = (a, True)
 
 
 tryToCalc :: BigDecimal -> Operation -> BigDecimal -- A op B

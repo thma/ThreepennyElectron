@@ -4,6 +4,7 @@
   "description": "A ThreepennyGUI + Electron based Pocket Calculator",
   "main": "electron.js",
   "scripts": {
+    "prestart": "./stack-install.js",
     "start": "./node_modules/.bin/electron electron.js",
     "pack": "electron-packager .",
     "postpack": "ncp static ThreepennyElectron-win32-x64/static"

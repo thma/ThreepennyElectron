@@ -23,21 +23,21 @@ spec :: Spec
 spec = 
   describe "populate" $ do
     it "adds digits to first number" $
-      populate "1" initialState  `shouldBe` EnteringA (1.0,False)
+      populate "1" initialState  `shouldBe` EnteringA ("01",False)
     it "adds floating point to first number" $
-      populate "." (EnteringA (33,False)) `shouldBe` EnteringA (33,True)
+      populate "." (EnteringA ("33",False)) `shouldBe` EnteringA ("33.",True)
     it "adds first fractional digit after decimal point" $
-      populate "3" (EnteringA (33,True)) `shouldBe` EnteringA (fromString "33.3",True)
+      populate "3" (EnteringA ("33.",True)) `shouldBe` EnteringA ("33.3",True)
     it "adds second fractional digits after decimal point" $
-      populate "3" (EnteringA (fromString "3.3",True)) `shouldBe` EnteringA (fromString "3.33",True)   
+      populate "3" (EnteringA ("3.3",True)) `shouldBe` EnteringA ("3.33",True)   
     it "adds second fractional digits after decimal point" $
-      populate "3" (EnteringA (fromString "33.3",True)) `shouldBe` EnteringA (fromString "33.33",True)  
+      populate "3" (EnteringA ("33.3",True)) `shouldBe` EnteringA  ("33.33",True)  
     it "adds second fractional digits after decimal point" $
-      populate "3" (EnteringA (fromString "333.33",True)) `shouldBe` EnteringA (fromString "333.333",True)          
+      populate "3" (EnteringA ("333.33",True)) `shouldBe` EnteringA ("333.333",True)          
     it "adds zeros as fractional digits" $
-      populate "0" (EnteringA (fromString "333.33",True)) `shouldBe` EnteringA (fromString "333.330",True)
+      populate "0" (EnteringA ("333.33",True)) `shouldBe` EnteringA ("333.330",True)
     it "maintains zeros as fractional digits" $
-      populate "3" (populate "0" (EnteringA (fromString "333.33",True))) `shouldBe` EnteringA (fromString "333.3303",True)   
+      populate "3" (populate "0" (EnteringA ("333.33",True))) `shouldBe` EnteringA ("333.3303",True)   
     it "can add numbers" $
       display (compute "1 2 + 8 8 =") `shouldBe` "100"
     it "can multiply numbers" $
@@ -45,9 +45,10 @@ spec =
     it "can substract numbers" $
       display (compute "1 . 2 - 1 . 2 =") `shouldBe` "0.0"   
     it "can divide numbers" $
-      display (compute "2 7 / 3 =") `shouldBe` "9"   
+      display (compute "2 7 / 3 =") `shouldBe` "9.0"   
     it "gives an error on division by zero" $
       display (compute "2 7 / 0 =") `shouldBe` "Division by Zero!"     
     it "computes sequences of operation" $
-      display (compute "2 + 2 + 2 + 2 * 8 = =") `shouldBe` "512"        
+      display (compute "2 + 2 + 2 + 2 * 8 = =") `shouldBe` "512.0"        
       -- property $ \bd -> (fromString . toString) bd === (bd :: BigDecimal)
+--}
