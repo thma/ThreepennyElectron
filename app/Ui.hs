@@ -55,8 +55,7 @@ setup win =
     -- define event handling for button clicks
     let clicks = buttonClicks (zip (concat buttons) (concatMap (map fst) buttonLabels))
         commands = fmap populate clicks
-        state = initialState
-    calcBehaviour <- accumB state commands
+    calcBehaviour <- accumB initialState commands
     let outText = fmap display calcBehaviour
     element outputBox # sink value outText
     where
