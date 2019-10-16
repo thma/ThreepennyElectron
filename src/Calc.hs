@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-} -- ensure that all possible Commands are covered in pattern matching
 module Calc (
     State(..),
-    populate, display, initialState, Operation(..), Command(..), Digit(..), toLabel -- , commandsToSymbols, symbolsToCommands, Symbol, sym
+    populate, display, initialState, Operation(..), Command(..), Digit(..), toLabel 
     ) where
 
 data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
@@ -11,7 +11,7 @@ data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
 data Command = Digit Digit
              | Dot
              | Operation Operation
-             | Flush | Clear | ClearError | Pi
+             | Flush | Clear | ClearError
              deriving (Show, Eq, Ord)
 
 type Raw = (String, Bool)
@@ -36,11 +36,10 @@ display s =
     Error         _ msg -> msg
 
 trim :: String -> String
-trim "0"        = "0"
-trim str@('0':'.':tail) = str
-trim ('0':tail) = tail
-trim x          = x
-
+trim "0"           = "0"
+trim s@('0':'.':_) = s
+trim ('0':tail)    = tail
+trim x             = x
    
 fromRaw :: Raw -> Double
 fromRaw = read . fst
@@ -68,7 +67,6 @@ parseInput x = case x of
   "="  -> Flush
   "C"  -> Clear
   "CE" -> ClearError
-  "pi" -> Pi
   _    -> undefined
 
 toLabel :: Command -> String
@@ -91,7 +89,6 @@ toLabel c = case c of
   Flush         -> "="
   Clear         -> "C"
   ClearError    -> "CE"
-  Pi            -> "pi"
 
 populate :: String -> State -> State
 populate i =
@@ -101,14 +98,11 @@ populate i =
     Operation op -> applyOp op
     cmd          -> applyCmd cmd
 
-
 addDigit :: Digit -> State -> State
 addDigit x s =
   case s
-    -- (EnteringA (pi, _))      -> s
         of
     (EnteringA a)        -> EnteringA (update a)
-    -- (EnteringB a op (pi, _)) -> s
     (EnteringB a op b)   -> EnteringB a op (update b)
     (EnteredAandOp a op) -> EnteringB a op (num x, False)
     Calculated {}        -> EnteringA (num x, False)
@@ -120,19 +114,15 @@ addDigit x s =
     ccc "0" "0" = "0" -- avoid to create leading 0 digits
     ccc a b     = a ++ b
 
-
 addDot :: State -> State
 addDot s =
   case s of
-    -- (EnteringA (pi, _))      -> s
     (EnteringA a)            -> EnteringA (dotted a)
-    --(EnteringB a op (pi, _)) -> s
     (EnteringB a op b)       -> EnteringB a op (dotted b)
     _                        -> s
   where
     dotted (a, False) = (a ++ ".", True)
     dotted (a, True) = (a, True)
-
 
 tryToCalc :: Double -> Operation -> Double -- A op B
           -> (String -> a)                 -- error handler
@@ -147,7 +137,6 @@ tryToCalc a op  b _ mkResult =
             Div -> (/)
   in mkResult $ f a b
 
-
 applyOp :: Operation -> State -> State
 applyOp op s =
   case s of
@@ -159,7 +148,6 @@ applyOp op s =
     (Calculated a _ _)  -> EnteredAandOp a op
     _ -> s
 
-
 applyCmd :: Command -> State -> State
 applyCmd cmd s =
   case (cmd, s) of
@@ -170,8 +158,6 @@ applyCmd cmd s =
     (Flush,      EnteredAandOp a _) -> Error a "Can't do this!"
     (Flush,      EnteringB  a op b) -> calc a op (fromRaw b)
     (Flush,      Calculated a op b) -> calc a op b
-    --(Pi,         EnteringA _)       -> EnteringA (asRaw pi)
-    --(Pi,         EnteredAandOp a op) -> EnteringB  a op (pi, False)
     _                               -> s
   where
     calc a op b = tryToCalc a op b
