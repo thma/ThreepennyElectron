@@ -14,42 +14,38 @@ data Command = Digit Digit
              | Flush | Clear | ClearError | Pi
              deriving (Show, Eq, Ord)
 
-type BigDecimal = Double
-toString :: BigDecimal -> String
-toString = show
-
 type Raw = (String, Bool)
 
-data State = EnteringA     Raw                          -- raw A
-           | EnteredAandOp BigDecimal  Operation        -- A, Op
-           | EnteringB     BigDecimal  Operation Raw    -- A, Op, raw B
-           | Calculated    BigDecimal  Operation BigDecimal -- A, Op, B
-           | Error         BigDecimal  String           -- A, Message
+data State = EnteringA     Raw                      -- raw A
+           | EnteredAandOp Double  Operation        -- A, Op
+           | EnteringB     Double  Operation Raw    -- A, Op, raw B
+           | Calculated    Double  Operation Double -- A, Op, B
+           | Error         Double  String           -- A, Message
            deriving (Show, Eq)
   
 initialState :: State
 initialState = EnteringA ("0", False)
 
-
 display :: State -> String
 display s =
   case s of
-    EnteringA     a     -> fst a
-    EnteredAandOp a _   -> toString a
-    EnteringB     _ _ b -> fst b
-    Calculated    a _ _ -> toString a
+    EnteringA     a     -> trim $ fst a
+    EnteredAandOp a _   -> show a
+    EnteringB     _ _ b -> trim $ fst b
+    Calculated    a _ _ -> show a
     Error         _ msg -> msg
 
-
 trim :: String -> String
-trim = let f = reverse . dropWhile isZero
-           isZero c  = '0' == c 
-        in f . f
+trim "0"        = "0"
+trim str@('0':'.':tail) = str
+trim ('0':tail) = tail
+trim x          = x
+
    
-fromRaw :: Raw -> BigDecimal
+fromRaw :: Raw -> Double
 fromRaw = read . fst
 
-asRaw :: BigDecimal -> Raw
+asRaw :: Double -> Raw
 asRaw x = (show x, x /= (fromInteger . truncate) x) 
 
 parseInput :: String -> Command
@@ -118,9 +114,11 @@ addDigit x s =
     Calculated {}        -> EnteringA (num x, False)
     _ -> s
   where
-    update (a, False) = (a ++ num x, False)
-    update (a, True)  = (a ++ num x, True)   
+    update (a, False) = (ccc a (num x), False)
+    update (a, True)  = (ccc a (num x), True)   
     num x = toLabel (Digit x)
+    ccc "0" "0" = "0" -- avoid to create leading 0 digits
+    ccc a b     = a ++ b
 
 
 addDot :: State -> State
@@ -136,9 +134,9 @@ addDot s =
     dotted (a, True) = (a, True)
 
 
-tryToCalc :: BigDecimal -> Operation -> BigDecimal -- A op B
+tryToCalc :: Double -> Operation -> Double -- A op B
           -> (String -> a)                 -- error handler
-          -> (BigDecimal -> a)             -- result handler
+          -> (Double -> a)                 -- result handler
           -> a 
 tryToCalc _ Div b mkError _  | b == 0 = mkError "Division by Zero!"
 tryToCalc a op  b _ mkResult =
