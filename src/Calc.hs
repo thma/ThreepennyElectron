@@ -34,13 +34,18 @@ initialState = EnteringA ("0", False)
 display :: State -> String
 display s =
   case s of
-    EnteringA     a     -> toString (fromRaw a)
+    EnteringA     a     -> fst a
     EnteredAandOp a _   -> toString a
-    EnteringB     _ _ b -> toString (fromRaw b)
+    EnteringB     _ _ b -> fst b
     Calculated    a _ _ -> toString a
     Error         _ msg -> msg
 
 
+trim :: String -> String
+trim = let f = reverse . dropWhile isZero
+           isZero c  = '0' == c 
+        in f . f
+   
 fromRaw :: Raw -> BigDecimal
 fromRaw = read . fst
 
@@ -109,16 +114,14 @@ addDigit x s =
     (EnteringA a)        -> EnteringA (update a)
     -- (EnteringB a op (pi, _)) -> s
     (EnteringB a op b)   -> EnteringB a op (update b)
-    (EnteredAandOp a op) -> EnteringB a op (asRaw x')
-    Calculated {}        -> EnteringA (asRaw x')
+    (EnteredAandOp a op) -> EnteringB a op (num x, False)
+    Calculated {}        -> EnteringA (num x, False)
     _ -> s
   where
     update (a, False) = (a ++ num x, False)
     update (a, True)  = (a ++ num x, True)   
     num x = toLabel (Digit x)
-    xInt = read (num x) :: Integer
-    x' = fromInteger xInt
-    
+
 
 addDot :: State -> State
 addDot s =

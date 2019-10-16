@@ -87,8 +87,6 @@ setup win =
         , [(toLabel $ Digit One, Grey),   (toLabel $ Digit Two, Grey),   (toLabel $ Digit Three, Grey), (toLabel $ Operation Mul, Brown), (toLabel $ Operation Div, Brown)]
         , [(toLabel $ Dot, Grey),         (toLabel $ Digit Zero, Grey),  (toLabel $ Flush, Black)] ]
 
---lbl = toLabel ($)
-
 -- | Button colors
 data Color = Grey | Orange | Brown | Black deriving (Show)
 
