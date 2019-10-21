@@ -6,8 +6,8 @@
   "scripts": {
     "prestart": "node ./stack-install.js",
     "start": "electron .",
-    "pack": "./node_modules/.bin/electron-packager .",
-    "postpack": "ncp static ThreepennyElectron-win32-x64/static"
+    "package": "electron-packager . ThreepennyElectron --overwrite --asar=true --platform=win32 --arch=x64 --icon=calc.ico --prune=true",
+    "postpackage": "ncp static ThreepennyElectron-win32-x64/static"
   },
   "repository": "https://github.com/thma/ThreepennyElectron",
   "keywords": [

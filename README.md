@@ -1,4 +1,38 @@
-# ThreepennyElectron
+# Writing Haskell native GUI Applications with Threepenny GUI and Electron.
+
+## Meagre support for writing Desktop Applications in Haskell ?
+
+Since reading The GUI chapter in [Real World Haskell](http://book.realworldhaskell.org/read/gui-programming-with-gtk-hs.html) 
+I had the impression that Haskell does not excel in GUI programming.
+The GUI examples in Real World Haskell are based on  [gtk2hs](https://github.com/gtk2hs/gtk2hs). Gtk2hs is a Haskell library that allows to write 
+platform-independent GUI applications.
+Yes, there are large applications based on gtk2hs or its successor [gi-gtk-hs](https://github.com/haskell-gi/gi-gtk-hs) like the 
+Haskell IDE [Leksah](http://leksah.org/). But still...
+
+
+## Threepenny to the rescue
+A few weeks back I was asked to write a standalone GUI version of an existing Haskell commandline app.
+
+I never was really happy with the look and feel of GTK based applications 
+And I also wasn't keen on going back to callback based UI programming.
+So I had a look at Gabriel Gonzalez great resource 
+[State of the Haskell ecosystem](https://github.com/Gabriel439/post-rfc/blob/master/sotu.md).
+
+In the [section on Standalone GUI applications](https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#standalone-gui-applications) 
+he mentions mainly GTK and Qt bindings but also some other libraries.
+One of them was [Threepenny GUI](http://wiki.haskell.org/Threepenny-gui). It caught my attention because it uses 
+the web browser as a display. 
+
+> A program written with Threepenny is essentially a small web server that displays the user interface as a web 
+> page to any browser that connects to it. You can freely manipulate the HTML DOM and handle JavaScript events 
+> from your Haskell code.
+>
+> (Quoted from the  [hackage documentation](https://hackage.haskell.org/package/threepenny-gui))
+
+The Event handling uses a reactive 
+
+## WIP
+----
 
 The Calculator example is based on 
 https://bitbucket.org/astynax/threep/src/default/
@@ -25,35 +59,3 @@ npm install electron-packager
 ./node_modules/.bin/electron-packager .
 
 ./node_modules/.bin/electron-packager . --ignore=app --ignore=src
-
-
-{
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron ."
-  },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "devDependencies": {
-    "electron": "~1.6.2",
-    "gulp": "^3.9.1",
-    "gulp-sass": "^3.1.0"
-  },
-  "dependencies": {
-    "electron": "^1.6.2",
-    "favicon-getter": "^1.1.3",
-    "jsonfile": "^2.4.0",
-    "uuid": "^3.0.1"
-  }
-}
