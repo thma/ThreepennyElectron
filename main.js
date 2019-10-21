@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const {app, BrowserWindow} = require('electron');
 const freeport = require('freeport');
 const spawn = require('child_process').spawn;
 const path = require('path');
@@ -10,7 +10,6 @@ const timeout = 10000;
 const relBin = './build/ThreepennyElectron';
 // Additional arguments to pass to the Threepenny binary.
 const binArgs = [];
-//const binArgs = ['otherArg1', 'otherArg2'];
 
 // Assign a random port to run on.
 freeport((err, port) => {

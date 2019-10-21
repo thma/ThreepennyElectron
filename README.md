@@ -11,13 +11,13 @@ https://bitbucket.org/astynax/threep/src/default/
 electron integration:
 https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md
 
+
+howto:
+
+- npm install
+- npm start   // this will also do a 'stack install --local-bin-path build' to build the haskell app
+
 npm install
-
-stack install --local-bin-path build
-
-Now you can simply set relBin to ./build/deva-ui.
-
-Now run your app with Electron: ./node_modules/.bin/electron electron.js
 
 
 npm install electron-packager
