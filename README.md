@@ -5,13 +5,17 @@
 Since reading The GUI chapter in [Real World Haskell](http://book.realworldhaskell.org/read/gui-programming-with-gtk-hs.html) 
 I had the impression that Haskell does not excel in GUI programming.
 The GUI examples in Real World Haskell are based on  [gtk2hs](https://github.com/gtk2hs/gtk2hs). Gtk2hs is a Haskell library that allows to write 
-platform-independent GUI applications.
-Yes, there are large applications based on gtk2hs or its successor [gi-gtk-hs](https://github.com/haskell-gi/gi-gtk-hs) like the 
+platform-independent GUI applications based on the GTK library.
+There are some large applications based on gtk2hs or its successor [gi-gtk-hs](https://github.com/haskell-gi/gi-gtk-hs) like the 
 Haskell IDE [Leksah](http://leksah.org/). But still...
 
-
 ## Threepenny to the rescue
-A few weeks back I was asked to write a standalone GUI version of an existing Haskell commandline app.
+A few weeks back I was asked to write a standalone GUI version of an existing Haskell commandline app. So I had to make up
+my mind about choosing a GUI library with an optimal fit to my needs.
+
+- provide a platform independent standalon GUI application.
+- use functional reactive programming instead of event handler callbacks
+- provide 
 
 I never was really happy with the look and feel of GTK based applications 
 And I also wasn't keen on going back to callback based UI programming.
