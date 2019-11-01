@@ -43,7 +43,7 @@ setup win =
     -- define UI controls
     outputBox <- UI.input
                       # set (attr "readonly") "true"
-                      # set (attr "style") "text-align: right; min-width: 322px"
+                      # set (attr "style") "text-align: right; min-width: 324px"
                       # set value "0"
     buttons <- mapM (mapM mkButton) buttonLabels
 

@@ -50,11 +50,23 @@ I received very good feedback from the endusers and my impression was:
 
 >"Thanks to Threepenny GUI support in Haskell has just become a bit more mature!"
 
-As I did not find much coverage of this specific Electron / Threepenny GUI combination in blogs or tutorials I thought it would be a good idea to spread the word by writing a short tutorial featuring the basic building blocks of this approach.
+As I did not find much coverage of this specific Electron / Threepenny GUI combination in blogs or tutorials I thought it 
+would be a good idea to spread the word by writing a short tutorial featuring the basic building blocks of this approach.
 
-So without further ado let's dive into the code:
+So without further ado let's get started:
 
-## 
+## Writing a platform independent standalone calculator app
+
+In order to provide a bit more than just a hello world example I'm showcasing a simple pocket calculator app. This allows to demonstrate basic features of writing real world UI applications. 
+
+The UI of the calculator is shown in the screenshot below. It features a display, a numeric block for entering digits and a decimal point, buttons for the four basic arithmetical operations, a **clear** button and a **clear error** button:
+
+![screenshot of the calculator](screenshot.png)
+
+
+### The calculator
+
+At the heart of the application is the model. In this case the [calculator](src/Calc.hs). It is implemented as a simple state machine.
 
 ## WIP
 ----
