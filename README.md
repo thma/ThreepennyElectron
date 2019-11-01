@@ -57,7 +57,7 @@ So without further ado let's get started:
 
 ## Writing a platform independent standalone calculator app
 
-In order to provide a bit more than just a hello world example I'm showcasing a simple pocket calculator app. This allows to demonstrate basic features of writing real world UI applications. 
+In order to provide a bit more than just a hello world example I'm showcasing a simple pocket calculator app. This allows to demonstrate basic features of writing real world UI applications. The calculator is based on an earlier [Threepenny GUI demo by Aleksey Pirogov](https://bitbucket.org/astynax/threep/src/default/).
 
 The UI of the calculator is shown in the screenshot below. It features a display, a numeric block for entering digits and a decimal point, buttons for the four basic arithmetical operations, a **clear** button and a **clear error** button:
 
@@ -66,7 +66,65 @@ The UI of the calculator is shown in the screenshot below. It features a display
 
 ### The calculator
 
-At the heart of the application is the model. In this case the [calculator](src/Calc.hs). It is implemented as a simple state machine.
+At the heart of an application sits the model. In this case the [calculator](src/Calc.hs). It is implemented as a simple state machine. The state machine knows five different states:
+
+1. Entering a number into the A register
+2. Finishing the entry of the first number by entering an Operation (+, -, *, /)
+3. Entering a number into the second register
+4. Finishing the Operation of the second number by entering **=** or another arithmetic operation
+5. an Error state in case of divison by zero or by entering a wrong sequence of buttons 
+
+This is reflected in the following data type declaration:
+
+```haskell
+data State = EnteringA     Entering                    -- entering A
+           | EnteredAandOp Double  Operation           -- A, Op
+           | EnteringB     Double  Operation Entering  -- A, Op, entering B
+           | Calculated    Double  Operation Double    -- A, Op, B
+           | Error         Double  String              -- A, Message
+           deriving (Show, Eq)
+
+type Entering = (String, Bool) -- A tuple of the String representation of the entered digits and a flag signalling that **.** has already been pressed.
+```
+
+Starting with an initial state 
+
+```haskell
+initialState :: State
+initialState = EnteringA ("0", False)
+```
+
+we can use the calculator by populating it with Button events:
+
+```haskell
+-- in GHCi:
+> populate "9" initialState
+EnteringA ("09",False)
+> populate "9" it
+EnteringA ("099",False)
+> populate "/" it
+EnteredAandOp 99.0 Div
+> populate "7" it
+EnteringB 99.0 Div ("7",False)
+> populate "=" it
+Calculated 14.142857142857142 Div 7.0
+```
+
+The `populate` function is defined as :
+
+```haskell
+populate :: String -> State -> State
+populate i =
+  case parseInput i of
+    Digit x      -> addDigit x
+    Dot          -> addDot
+    Operation op -> applyOp  op
+    cmd          -> applyCmd cmd
+```
+
+
+
+
 
 ## WIP
 ----

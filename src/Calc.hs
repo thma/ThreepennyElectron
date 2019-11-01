@@ -14,11 +14,11 @@ data Command = Digit Digit
              | Flush | Clear | ClearError
              deriving (Show, Eq, Ord)
 
-type Raw = (String, Bool)
+type Entering = (String, Bool) -- A tuple of the String representation of the entered digits and a flag signalling that **.** has already been pressed.
 
-data State = EnteringA     Raw                      -- raw A
+data State = EnteringA     Entering                      -- entering A
            | EnteredAandOp Double  Operation        -- A, Op
-           | EnteringB     Double  Operation Raw    -- A, Op, raw B
+           | EnteringB     Double  Operation Entering    -- A, Op, entering B
            | Calculated    Double  Operation Double -- A, Op, B
            | Error         Double  String           -- A, Message
            deriving (Show, Eq)
@@ -41,11 +41,11 @@ trim s@('0':'.':_) = s
 trim ('0':tail)    = tail
 trim x             = x
    
-fromRaw :: Raw -> Double
-fromRaw = read . fst
+fromEntering :: Entering -> Double
+fromEntering = read . fst
 
-asRaw :: Double -> Raw
-asRaw x = (show x, x /= (fromInteger . truncate) x) 
+asEntering :: Double -> Entering
+asEntering x = (show x, x /= (fromInteger . truncate) x) 
 
 parseInput :: String -> Command
 parseInput x = case x of
@@ -100,8 +100,7 @@ populate i =
 
 addDigit :: Digit -> State -> State
 addDigit x s =
-  case s
-        of
+  case s of
     (EnteringA a)        -> EnteringA (update a)
     (EnteringB a op b)   -> EnteringB a op (update b)
     (EnteredAandOp a op) -> EnteringB a op (num x, False)
@@ -140,8 +139,8 @@ tryToCalc a op  b _ mkResult =
 applyOp :: Operation -> State -> State
 applyOp op s =
   case s of
-    (EnteringA a) -> EnteredAandOp (fromRaw a) op
-    (EnteringB a op' b) -> tryToCalc a op' (fromRaw b)
+    (EnteringA a) -> EnteredAandOp (fromEntering a) op
+    (EnteringB a op' b) -> tryToCalc a op' (fromEntering b)
                                      (Error a)
                                      (`EnteredAandOp` op)
     (EnteredAandOp a _) -> Error a "Can't do this!"
@@ -151,12 +150,12 @@ applyOp op s =
 applyCmd :: Command -> State -> State
 applyCmd cmd s =
   case (cmd, s) of
-    (ClearError, Error a _)         -> EnteringA (asRaw a)
+    (ClearError, Error a _)         -> EnteringA (asEntering a)
     (Clear,      _)                 -> initialState
     (_,          Error _ _)         -> s
     (Flush,      EnteringA _)       -> s
     (Flush,      EnteredAandOp a _) -> Error a "Can't do this!"
-    (Flush,      EnteringB  a op b) -> calc a op (fromRaw b)
+    (Flush,      EnteringB  a op b) -> calc a op (fromEntering b)
     (Flush,      Calculated a op b) -> calc a op b
     _                               -> s
   where
