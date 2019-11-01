@@ -24,14 +24,7 @@ start port = do
     , jsCallBufferMode = BufferRun
     } setup
 
--- | launch site automatically in default web browser
-up :: IO ()
-up = do
-    launchSiteInBrowser
-    start 8023
-
-
--- | setup window layout
+-- | setup window layout and event handling
 setup :: Window -> UI ()
 setup win =
   void $
@@ -94,3 +87,8 @@ launchSiteInBrowser =
     _         -> createProcess  (shell $ "xdg-open " ++ url)   
     where url = "http://localhost:8023"
 
+-- | launch site automatically in default web browser
+up :: IO ()
+up = do
+    launchSiteInBrowser
+    start 8023
