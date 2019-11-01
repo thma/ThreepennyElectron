@@ -8,7 +8,6 @@ import           Test.Hspec.QuickCheck (modifyMaxSize, modifyMaxSuccess)
 import           Test.QuickCheck
 
 import           Calc
-import           Data.BigDecimal
 
 -- `main` is here so that this module can be run from GHCi on its own.  It is
 -- not needed for automatic spec discovery.
@@ -49,6 +48,6 @@ spec =
     it "gives an error on division by zero" $
       display (compute "2 7 / 0 =") `shouldBe` "Division by Zero!"     
     it "computes sequences of operation" $
-      display (compute "2 + 2 + 2 + 2 * 8 = =") `shouldBe` "512.0"        
-      -- property $ \bd -> (fromString . toString) bd === (bd :: BigDecimal)
---}
+      display (compute "2 + 2 + 2 + 2 * 8 = =") `shouldBe` "512.0"
+    it "continues after error correction" $
+      display (compute "1 0 / 0 = EC / 2 =") `shouldBe` "5.0"     

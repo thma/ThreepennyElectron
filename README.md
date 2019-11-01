@@ -122,20 +122,35 @@ populate i =
     cmd          -> applyCmd cmd
 ```
 
+First the input is parsed to a Command. Based on the parsed Command 
+(either a digit, a dot, an arithmetic operation or `=`, `C` or `CE`) the current state is modified
+by one of the functions `addDigit`, `addDot`, `applyOp` or `applyCmd`.
 
+I won't dive deeper into those functions, as you will easily grasp the mechanism by studying the [source code](src/Calc.hs).
+
+In the [test suite](test/Calc/CalcSpec.hs) I'm using a helper function `compute` that allows to execute a sequence of Commands in much simpler way:
+
+```haskell
+compute :: String -> State
+compute keySequence = foldr populate initialState (words . reverse $ keySequence)
+```
+
+In GHCi you can use it to test sequences of Commands:
+
+```haskell
+-- in GHCi:
+> compute "9 9 / 7 ="
+Calculated 14.142857142857142 Div 7.0
+```
+
+## The Threepenny GUI
 
 
 
 ## WIP
 ----
 
-The Calculator example is based on 
-https://bitbucket.org/astynax/threep/src/default/
 
-- fixed issue with entering fraction digits
-- extended calculator functions
-- added semantic.css stylesheet
-- provided Electron integration which allows to generate standalone Desktop app from a Threepenny app
 
 electron integration:
 https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md

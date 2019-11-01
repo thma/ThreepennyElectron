@@ -38,7 +38,7 @@ display s =
 trim :: String -> String
 trim "0"           = "0"
 trim s@('0':'.':_) = s
-trim ('0':tail)    = tail
+trim ('0':tl)      = tl
 trim x             = x
    
 fromEntering :: Entering -> Double
@@ -109,7 +109,7 @@ addDigit x s =
   where
     update (a, False) = (ccc a (num x), False)
     update (a, True)  = (ccc a (num x), True)   
-    num x = toLabel (Digit x)
+    num i = toLabel (Digit i)
     ccc "0" "0" = "0" -- avoid to create leading 0 digits
     ccc a b     = a ++ b
 
