@@ -26,13 +26,15 @@ freeport((err, port) => {
     // Create the browser window.
     win = new BrowserWindow({
       width: 470,
-      height: 380,
+      height: 370,
       maximizable: false,
       resizable: false,
       icon: 'calc.ico',
+      title: '3PennyCalc...',
       webPreferences: { nodeIntegration: true },
     });
 
+    win.removeMenu();
     console.log(`Loading URL: ${url}`);
     win.loadURL(url);
 

@@ -52,6 +52,10 @@ I received very good feedback from the endusers and my impression was:
 
 As I did not find much coverage of this specific Electron / Threepenny GUI combination in blogs or tutorials I thought it would be a good idea to spread the word by writing a short tutorial featuring the basic building blocks of this approach.
 
+So without further ado let's dive into the code:
+
+## 
+
 ## WIP
 ----
 
