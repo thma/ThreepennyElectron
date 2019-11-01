@@ -10,14 +10,14 @@ There are some large applications based on gtk2hs or its successor [gi-gtk-hs](h
 Haskell IDE [Leksah](http://leksah.org/). It's rock solid technology. But it's also quite dated and the imperative programming model 
 is not an ideal fit for a purely functional language like Haskell.
 
-So even though I'm a Haskell enthusiast I tend to agree with [Gabriel Gonzales "Immature" rating](https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#standalone-gui-applications) 
-for Haskell's support of standalone GUI Applications.  
+So even though I'm a Haskell enthusiast I tended to agree with [Gabriel Gonzales "Immature" rating](https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#standalone-gui-applications) 
+of Haskell's support for standalone GUI Applications.  
 
 ## Threepenny to the rescue
 A few weeks back I was asked to write a standalone GUI version of an existing Haskell commandline app. So I had to make up
 my mind about choosing a GUI library with an optimal fit to my needs:
 
-- provide a platform independent standalon GUI application.
+- provide a multi-platform (Windows, MacOS, Linux) standalone GUI application.
 - use functional reactive programming instead of event handler callbacks
 - provide a modern look and feel e.g. material design
 
@@ -27,7 +27,7 @@ So I had a look at Gabriel Gonzalez great resource
 [State of the Haskell ecosystem](https://github.com/Gabriel439/post-rfc/blob/master/sotu.md).
 
 In the [section on Standalone GUI applications](https://github.com/Gabriel439/post-rfc/blob/master/sotu.md#standalone-gui-applications) 
-he mentions mainly GTK and Qt bindings but also some other libraries.
+he mainly mentions GTK and Qt bindings but also some other libraries.
 One of them is [Threepenny GUI](http://wiki.haskell.org/Threepenny-gui) which caught my attention because it uses 
 the web browser as a display. And it comes with an (optional) functional reactive programming model!
 
@@ -43,14 +43,14 @@ this would allow to package platform specific standalone GUI application for Win
 
 I really got excited when I found out that Heinrich Apfelmus (the autor of Threppenny GUI) already had already  written a short 
 [HOWTO document](https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md) that 
-explains the required steps to glue a ELectron frontend to a Threepenny backend.
+explains the required steps to glue an ELectron frontend to a Threepenny backend.
 
 Based on this Howto I was able to deliver a native windows GUI Application with an embed Haskell backend within just a few days.
-
-I got very good feedback from the endusers and My impression was:
+I received very good feedback from the endusers and my impression was:
 
 >"Thanks to Threepenny GUI support in Haskell has just become a bit more mature!"
 
+As I did not find much coverage of this specific Electron / Threepenny GUI combination in blogs or tutorials I thought it would be a good idea to spread the word by writing a short tutorial featuring the basic building blocks of this approach.
 
 ## WIP
 ----
