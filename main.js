@@ -1,15 +1,13 @@
 const {app, BrowserWindow} = require('electron');
 const freeport = require('freeport');
-const spawn = require('child_process').spawn;
-const path = require('path');
-const waitOn = require('wait-on');
+const spawn    = require('child_process').spawn;
+const path     = require('path');
+const waitOn   = require('wait-on');
 
  // Time to wait for Threepenny server, milliseconds
 const timeout = 10000;
 // Relative path to the Threepenny binary.
 const relBin = './build/ThreepennyElectron';
-// Additional arguments to pass to the Threepenny binary.
-const binArgs = [];
 
 // Assign a random port to run on.
 freeport((err, port) => {
@@ -49,7 +47,7 @@ freeport((err, port) => {
   // browser windows. Some APIs can only be used after this event occurs. We
   // start the child process and wait before loading the web page.
   app.on('ready', () => {
-    child = spawn(path.join(__dirname, relBin), [port].concat(binArgs));
+    child = spawn(path.join(__dirname, relBin), [port]);
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
     child.stdout.on('data', console.log);

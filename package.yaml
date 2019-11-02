@@ -2,13 +2,12 @@ name:                ThreepennyElectron
 version:             0.1.0.0
 github:              "https://github.com/thma/ThreepennyElectron"
 license:             Apache-2.0
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+author:              "Thomas Mahler"
+maintainer:          "thma@apache.org"
+copyright:           "2019 Thomas Mahler"
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
