@@ -128,21 +128,6 @@ by one of the functions `addDigit`, `addDot`, `applyOp` or `applyCmd`.
 
 I won't dive deeper into those functions, as you will easily grasp the mechanism by studying the [source code](src/Calc.hs).
 
-In the [test suite](test/Calc/CalcSpec.hs) I'm using a helper function `compute` that allows to execute a sequence of Commands in much simpler way:
-
-```haskell
-compute :: String -> State
-compute keySequence = foldr populate initialState (words . reverse $ keySequence)
-```
-
-In GHCi you can use it to test sequences of Commands:
-
-```haskell
--- in GHCi:
-> compute "9 9 / 7 ="
-Calculated 14.142857142857142 Div 7.0
-```
-
 ## The Threepenny GUI
 
 
