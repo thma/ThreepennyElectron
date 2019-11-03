@@ -195,7 +195,7 @@ setup win = void $ do
 
 We start by assigning a title to the window `win` and adding a stylesheet. In our example we are using the [Semantic UI](https://semantic-ui.com/) stylesheet.
 
-Next we define the calculator display element `outputBox` as a `UI.input`
+Next we define the calculator display element `outputBox` as a `UI.input` element. These elements willbe rendered as HTML DOM elements in the browser. Threepenny provides combinators to define css classes and other html attributes. In this case we set the input field to readonly, make the text align to the right and set its width:
 
 ```haskell
   -- define UI controls
@@ -204,7 +204,11 @@ Next we define the calculator display element `outputBox` as a `UI.input`
                 # set (attr "style") "text-align: right; min-width: 324px"
 ```
 
+This is resulting HTML DOM element:
+
+```html
 <input readonly="readonly" style="text-align: right; min-width: 324px">
+```
 
 ```haskell
   buttons   <- mapM (mapM mkButton) buttonLabels
