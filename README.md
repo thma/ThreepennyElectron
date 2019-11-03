@@ -145,6 +145,96 @@ main = do
 
 This function will either be called when starting the application with `stack exec ThreepennyElectron 8080` or by the electron launch script main.js (which we will discuss later).
 
+The `Ui` module contains all code for rendering the HTML dom, setting up the event binding to GUI widgets and the respective interaction with application backend.
+
+Let's start with the main entry point `Ui.start` which is called on application launch:
+
+```haskell
+start :: Int -> IO ()
+start port = startGUI defaultConfig
+    { jsPort   = Just port
+    , jsStatic = Just "static"
+    } setup
+```
+
+It takes the port number as parameter and starts up a web server with the Threepenny `startGUI` function.
+`startGUI` has the folloing type signature: 
+
+```haskell
+-- | Start server for GUI sessions.
+startGUI
+    :: Config               -- ^ Server configuration.
+    -> (Window -> UI ())    -- ^ Action to run whenever a client browser connects.
+    -> IO ()
+```
+
+We build our server configuration by starting with the default configuration `defaultConfig` and 
+then modifying two properties:
+
+1. setting the port number to the one read from the command line. 
+2. declaring the static content (i.e any html, JavaScript and CSS content) to reside in the directory `./static`.
+
+The `(Window -> UI ())` action parameter is filled with the function `setup`.
+
+Obviously this function must have the following signature:
+
+```haskell
+-- | setup window layout and event handling
+setup :: Window -> UI ()
+```
+
+As this function defines the whole layout and user interaction we will inspect it step by step.
+The first step is to define the UI elements the overall window layout:
+
+```haskell
+setup win = void $ do
+  -- define page + stylesheet
+  return win # set title "3PennyCalc"
+  UI.addStyleSheet win "semantic.min.css"
+```
+
+We start by assigning a title to the window `win` and adding a stylesheet. In our example we are using the [Semantic UI](https://semantic-ui.com/) stylesheet.
+
+Next we define the calculator display element `outputBox` as a `UI.input`
+
+```haskell
+  -- define UI controls
+  outputBox <- UI.input
+                # set (attr "readonly") "true"
+                # set (attr "style") "text-align: right; min-width: 324px"
+```
+
+<input readonly="readonly" style="text-align: right; min-width: 324px">
+
+```haskell
+  buttons   <- mapM (mapM mkButton) buttonLabels
+
+  -- define page DOM with 3penny html combinators
+  UI.getBody win # set (attr "style") "overflow: hidden" #+
+    [ UI.div #. "ui raised very padded text container segment" #+
+      [UI.table #+ [UI.row [UI.div #. "ui input focus" #+ [element outputBox]]] #+ 
+                    map (UI.row . map element) buttons]
+    ]
+
+  where
+    mkButton :: (String, Color) -> UI Element
+    mkButton (s, c) =
+      UI.button #. ("ui " ++ color c ++ " button") 
+                # set text s # set value s 
+                # set (attr "type") "button" 
+                # set (attr "style") "min-width: 60px"
+
+    color :: Color -> String
+    color = map toLower . show
+                  
+    buttonLabels :: [[(String, Color)]]
+    buttonLabels =
+      [ [(lbl $ Digit Seven, Grey), (lbl $ Digit Eight, Grey), (lbl $ Digit Nine, Grey),  (lbl   ClearError, Orange),   (lbl   Clear, Orange)]
+      , [(lbl $ Digit Four, Grey),  (lbl $ Digit Five, Grey),  (lbl $ Digit Six, Grey),   (lbl $ Operation Add, Brown), (lbl $ Operation Sub, Brown)]
+      , [(lbl $ Digit One, Grey),   (lbl $ Digit Two, Grey),   (lbl $ Digit Three, Grey), (lbl $ Operation Mul, Brown), (lbl $ Operation Div, Brown)]
+      , [(lbl   Dot, Grey),         (lbl $ Digit Zero, Grey),  (lbl   Flush, Black)] ]
+```
+
 
 
 ## WIP

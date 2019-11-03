@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-} -- ensure that all possible Commands are covered in pattern matching
 module Calc (
     State(..),
-    populate, display, initialState, Operation(..), Command(..), Digit(..), toLabel 
+    populate, display, initialState, Operation(..), Command(..), Digit(..), lbl 
     ) where
 
 data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
@@ -14,13 +14,14 @@ data Command = Digit Digit
              | Flush | Clear | ClearError
              deriving (Show, Eq, Ord)
 
-type Entering = (String, Bool) -- A tuple of the String representation of the entered digits and a flag signalling that **.** has already been pressed.
+type Entering = (String, Bool) -- A tuple of the String representation of the entered digits 
+                               -- and a flag signalling that Dot was already pressed.
 
-data State = EnteringA     Entering                      -- entering A
-           | EnteredAandOp Double  Operation        -- A, Op
-           | EnteringB     Double  Operation Entering    -- A, Op, entering B
-           | Calculated    Double  Operation Double -- A, Op, B
-           | Error         Double  String           -- A, Message
+data State = EnteringA     Entering                   -- entering A
+           | EnteredAandOp Double  Operation          -- A, Op
+           | EnteringB     Double  Operation Entering -- A, Op, entering B
+           | Calculated    Double  Operation Double   -- A, Op, B
+           | Error         Double  String             -- A, Message
            deriving (Show, Eq)
   
 initialState :: State
@@ -69,8 +70,8 @@ parseInput x = case x of
   "CE" -> ClearError
   _    -> undefined
 
-toLabel :: Command -> String
-toLabel c = case c of
+lbl :: Command -> String
+lbl c = case c of
   Digit Zero    -> "0"
   Digit One     -> "1"
   Digit Two     -> "2"
@@ -109,7 +110,7 @@ addDigit x s =
   where
     update (a, False) = (ccc a (num x), False)
     update (a, True)  = (ccc a (num x), True)   
-    num i = toLabel (Digit i)
+    num i = lbl (Digit i)
     ccc "0" "0" = "0" -- avoid to create leading 0 digits
     ccc a b     = a ++ b
 
