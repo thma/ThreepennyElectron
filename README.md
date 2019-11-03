@@ -12,6 +12,7 @@ See it in action:
 git clone https://github.com/thma/ThreepennyElectron.git
 cd ThreepennyElectron
 stack init
+npm install
 npm start
 ```
 
@@ -263,7 +264,7 @@ To give an example the first element from `buttonLabels`: `(lbl $ Digit Seven, G
 <button class="ui grey button" value="7" type="button" style="min-width: 60px">7</button>
 ```
 
-As the last step of the layouting stage we glue everything together to a nice grid as place it as the HTML body into the DOM tree:
+As the last step of the layouting stage we glue everything together to a nice grid and place it as the HTML body into the DOM tree:
 
 ```haskell
   UI.getBody win # set (attr "style") "overflow: hidden" #+
@@ -273,6 +274,95 @@ As the last step of the layouting stage we glue everything together to a nice gr
     ]
 ```
 
+```html
+<body style="overflow: hidden">
+<noscript>Please enable JavaScript.</noscript>
+
+
+<div class="ui raised very padded text container segment">
+    <table>
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">
+                    <div class="ui input focus"><input readonly="readonly" style="text-align: right; min-width: 324px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">
+                    <button class="ui grey button" value="7" type="button" style="min-width: 60px">7</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="8" type="button" style="min-width: 60px">8</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="9" type="button" style="min-width: 60px">9</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui orange button" value="CE" type="button" style="min-width: 60px">CE</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui orange button" value="C" type="button" style="min-width: 60px">C</button>
+                </div>
+            </div>
+        </div>
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">
+                    <button class="ui grey button" value="4" type="button" style="min-width: 60px">4</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="5" type="button" style="min-width: 60px">5</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="6" type="button" style="min-width: 60px">6</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui brown button" value="+" type="button" style="min-width: 60px">+</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui brown button" value="-" type="button" style="min-width: 60px">-</button>
+                </div>
+            </div>
+        </div>
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">
+                    <button class="ui grey button" value="1" type="button" style="min-width: 60px">1</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="2" type="button" style="min-width: 60px">2</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="3" type="button" style="min-width: 60px">3</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui brown button" value="*" type="button" style="min-width: 60px">*</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui brown button" value="/" type="button" style="min-width: 60px">/</button>
+                </div>
+            </div>
+        </div>
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">
+                    <button class="ui grey button" value="." type="button" style="min-width: 60px">.</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui grey button" value="0" type="button" style="min-width: 60px">0</button>
+                </div>
+                <div class="table-cell">
+                    <button class="ui black button" value="=" type="button" style="min-width: 60px">=</button>
+                </div>
+            </div>
+        </div>
+    </table>
+</div>
+</body>
+```
 
 ## WIP
 ----
