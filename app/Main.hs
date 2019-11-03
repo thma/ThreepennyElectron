@@ -1,11 +1,10 @@
 module Main where
 
-  import System.Environment (getArgs)
-  import System.IO          (hSetBuffering, stdout, BufferMode( LineBuffering ))
-  import Ui                 (start)
-  
-  main :: IO ()
-  main = do
-      hSetBuffering stdout LineBuffering
-      [port] <- getArgs
-      start (read port)
+import           System.Environment (getArgs)
+import qualified Ui                 (start)
+
+-- | main entry point, also used by the main.js launch script
+main :: IO ()
+main = do
+  [port] <- getArgs
+  Ui.start (read port)

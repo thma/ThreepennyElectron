@@ -130,6 +130,21 @@ I won't dive deeper into those functions, as you will easily grasp the mechanism
 
 ## The Threepenny GUI
 
+I will not give an introduction to the Threepenny GUI programming model here as 
+Threepenny already ships with [plenty of samples](https://github.com/HeinrichApfelmus/threepenny-gui/tree/master/samples) and a good [getting started tutorial](https://github.com/HeinrichApfelmus/threepenny-gui/tree/master/doc/hal-2017). 
+Instead I will focus on presenting only those parts that are necessary to understand the calculator GUI.   
+
+The application Main module consists of a single function `main`. It reads a port number from the commandline an then call `Ui.start` to launch a WebServer hosting the Ui application on that port:
+
+```haskell
+main :: IO ()
+main = do
+  [port] <- getArgs
+  Ui.start (read port)
+```
+
+This function will either be called when starting the application with `stack exec ThreepennyElectron 8080` or by the electron launch script main.js (which we will discuss later).
+
 
 
 ## WIP

@@ -12,7 +12,7 @@ import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 import           Calc                        (Command(..), Digit(..), Operation(..), populate, display, initialState, toLabel)
 import           Data.Char                   (toLower)
 
--- | main entry point from electron.js launch script
+-- | main entry point from main.js launch script
 start :: Int -> IO ()
 start port = startGUI defaultConfig
     { jsPort = Just port
