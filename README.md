@@ -1,5 +1,20 @@
 # Writing Haskell native GUI Applications with Threepenny GUI and Electron.
 
+## tl;dr
+
+Threepenny is an awesome Haskell library for creating browser based application running on localhost.
+
+By combining it with the Electron.js framework you have a great toolset for writing cross-platform standalone GUI applications.
+
+See it in action:
+
+```bash
+git clone https://github.com/thma/ThreepennyElectron.git
+cd ThreepennyElectron
+stack init
+npm start
+```
+
 ## Immature support for writing Desktop Applications in Haskell ?
 
 Since reading The GUI chapter in [Real World Haskell](http://book.realworldhaskell.org/read/gui-programming-with-gtk-hs.html) 
@@ -190,10 +205,10 @@ The first step is to define the UI elements the overall window layout:
 setup win = void $ do
   -- define page + stylesheet
   return win # set title "3PennyCalc"
-  UI.addStyleSheet win "semantic.min.css"
+  UI.addStyleSheet win "semantic.css"
 ```
 
-We start by assigning a title to the window `win` and adding a stylesheet. In our example we are using the [Semantic UI](https://semantic-ui.com/) stylesheet.
+We start by assigning a title to the window `win` and adding a stylesheet. In our example we are using the [Semantic UI](https://semantic-ui.com/) stylesheet. (You could of course use any other css framework or roll your own.)
 
 Next we define the calculator display element `outputBox` as a `UI.input` element. These elements willbe rendered as HTML DOM elements in the browser. Threepenny provides combinators to define css classes and other html attributes. In this case we set the input field to readonly, make the text align to the right and set its width:
 
@@ -210,15 +225,11 @@ This is resulting HTML DOM element:
 <input readonly="readonly" style="text-align: right; min-width: 324px">
 ```
 
-```haskell
-  buttons   <- mapM (mapM mkButton) buttonLabels
+In the next step we define the calculator buttons for digits, operations and commands:
 
-  -- define page DOM with 3penny html combinators
-  UI.getBody win # set (attr "style") "overflow: hidden" #+
-    [ UI.div #. "ui raised very padded text container segment" #+
-      [UI.table #+ [UI.row [UI.div #. "ui input focus" #+ [element outputBox]]] #+ 
-                    map (UI.row . map element) buttons]
-    ]
+```haskell
+  -- define the button grid
+  buttons   <- mapM (mapM mkButton) buttonLabels
 
   where
     mkButton :: (String, Color) -> UI Element
@@ -237,8 +248,30 @@ This is resulting HTML DOM element:
       , [(lbl $ Digit Four, Grey),  (lbl $ Digit Five, Grey),  (lbl $ Digit Six, Grey),   (lbl $ Operation Add, Brown), (lbl $ Operation Sub, Brown)]
       , [(lbl $ Digit One, Grey),   (lbl $ Digit Two, Grey),   (lbl $ Digit Three, Grey), (lbl $ Operation Mul, Brown), (lbl $ Operation Div, Brown)]
       , [(lbl   Dot, Grey),         (lbl $ Digit Zero, Grey),  (lbl   Flush, Black)] ]
+
+-- | Button colors
+data Color = Grey | Orange | Brown | Black deriving (Show)
 ```
 
+We start with a list of lists of `(String, Color)` tuples `buttonLabels :: [[(String, Color)]]`. The outer list represents the rows, the inner list the columns in each row. The tuples represent the labels and colors we want to see on the calculator buttons.
+
+Mapping the function `mkButton` over the `buttonLabels` is then used to create the `buttons :: [[UI Element]]`. Where `mkButton` defines each button as a `UI.button`, assigns a css class `("ui " ++ color c ++ " button")` to it (using the `#.` combinator) and sets text and other attributes by using the `# set` combinator. 
+
+To give an example the first element from `buttonLabels`: `(lbl $ Digit Seven, Grey)` will be rendered in the HTML DOM as:
+
+```html
+<button class="ui grey button" value="7" type="button" style="min-width: 60px">7</button>
+```
+
+As the last step of the layouting stage we glue everything together to a nice grid as place it as the HTML body into the DOM tree:
+
+```haskell
+  UI.getBody win # set (attr "style") "overflow: hidden" #+
+    [ UI.div #. "ui raised very padded text container segment" #+
+      [UI.table #+ [UI.row [UI.div #. "ui input focus" #+ [element outputBox]]] #+ 
+                    map (UI.row . map element) buttons]
+    ]
+```
 
 
 ## WIP
