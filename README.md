@@ -308,57 +308,9 @@ As the last step of the layouting stage we glue everything together to a nice gr
                 </div>
             </div>
         </div>
-        <div class="table">
-            <div class="table-row">
-                <div class="table-cell">
-                    <button class="ui grey button" value="4" type="button" style="min-width: 60px">4</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui grey button" value="5" type="button" style="min-width: 60px">5</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui grey button" value="6" type="button" style="min-width: 60px">6</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui brown button" value="+" type="button" style="min-width: 60px">+</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui brown button" value="-" type="button" style="min-width: 60px">-</button>
-                </div>
-            </div>
-        </div>
-        <div class="table">
-            <div class="table-row">
-                <div class="table-cell">
-                    <button class="ui grey button" value="1" type="button" style="min-width: 60px">1</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui grey button" value="2" type="button" style="min-width: 60px">2</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui grey button" value="3" type="button" style="min-width: 60px">3</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui brown button" value="*" type="button" style="min-width: 60px">*</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui brown button" value="/" type="button" style="min-width: 60px">/</button>
-                </div>
-            </div>
-        </div>
-        <div class="table">
-            <div class="table-row">
-                <div class="table-cell">
-                    <button class="ui grey button" value="." type="button" style="min-width: 60px">.</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui grey button" value="0" type="button" style="min-width: 60px">0</button>
-                </div>
-                <div class="table-cell">
-                    <button class="ui black button" value="=" type="button" style="min-width: 60px">=</button>
-                </div>
-            </div>
-        </div>
+
+        ...
+
     </table>
 </div>
 </body>
