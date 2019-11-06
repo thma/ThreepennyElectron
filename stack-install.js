@@ -1,3 +1,3 @@
-import { echo, exec } from 'shelljs';
-echo('build haskell application:');
-exec('stack install --local-bin-path build')
+const shell = require('shelljs');
+shell.echo('build haskell application:');
+shell.exec('stack install --local-bin-path build')

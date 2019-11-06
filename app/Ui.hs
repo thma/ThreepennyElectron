@@ -36,7 +36,7 @@ setup win = void $ do
   -- define page DOM with 3penny html combinators
   UI.getBody win # set (attr "style") "overflow: hidden" #+
     [ UI.div #. "ui raised very padded text container segment" #+
-      [UI.table #+ [UI.row [UI.div #. "ui input focus" #+ [element outputBox]]] #+ 
+      [UI.table #+ [UI.row [UI.div #. "ui input" #+ [element outputBox]]] #+ 
                     map (UI.row . map element) buttons]
     ]
 

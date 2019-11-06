@@ -2,9 +2,9 @@
 
 ## tl;dr
 
-Threepenny is an awesome Haskell library for creating browser based application running on localhost.
+Threepenny is an awesome Haskell library for creating browser based applications running on localhost.
 
-By combining it with the Electron.js framework you have a great toolset for writing cross-platform standalone GUI applications.
+By combining it with the Electron.js framework you have a great toolset for writing cross-platform standalone GUI applications &mdash; completely in Haskell with a great functional reactive programming API.
 
 See it in action:
 
@@ -200,6 +200,9 @@ setup :: Window -> UI ()
 ```
 
 As this function defines the whole layout and user interaction we will inspect it step by step.
+
+### Creating the Threepenny UI design
+
 The first step is to define the UI elements the overall window layout:
 
 ```haskell
@@ -272,7 +275,7 @@ Again we use css classes from the Semantic UI framework to create a pleasant loo
 ```haskell
   UI.getBody win # set (attr "style") "overflow: hidden" #+
     [ UI.div #. "ui raised very padded text container segment" #+
-      [UI.table #+ [UI.row [UI.div #. "ui input focus" #+ [element outputBox]]] #+ 
+      [UI.table #+ [UI.row [UI.div #. "ui input" #+ [element outputBox]]] #+ 
                     map (UI.row . map element) buttons]
     ]
 ```
@@ -287,7 +290,7 @@ The resulting HTML looks like follows (for brevity I'm showing only everything u
         <div class="table">
             <div class="table-row">
                 <div class="table-cell">
-                    <div class="ui input focus"><input readonly="readonly" style="text-align: right; min-width: 324px">
+                    <div class="ui input"><input readonly="readonly" style="text-align: right; min-width: 324px">
                     </div>
                 </div>
             </div>
@@ -318,6 +321,13 @@ The resulting HTML looks like follows (for brevity I'm showing only everything u
 </div>
 </body>
 ```
+
+This was everything we need to create the HTML UI as shown in the [screenshot](#writing-a-platform-independent-standalone-calculator-app) above.
+
+### Defining the application behaviour
+
+
+
 
 ## WIP
 ----
