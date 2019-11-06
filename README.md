@@ -438,9 +438,10 @@ The trick was to define a prestart script in [package.json](package.json)
 
 This script simply does a `stack install --local-bin-path build`. This guarantees that the ThreepennyElectron binary is residing under `./build/ThreepennyElectron` as expected by the `main.js` script.
 
-With the following npm command you can create application package ready for deployment on all supported platforms:
+With the following npm command you can create application package ready for deployment on your platform:
 
 ```bash
-npm run pack-all
+npm run pack-app
 ```
 
+You can use the parameters `--platform` and `--arch` to create packages for other platforms as well.
