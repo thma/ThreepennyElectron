@@ -400,10 +400,10 @@ Until now we have written a calculator as a Threepenny GUI application. We can b
 ```bash
 stack init
 stack install
-stank exec ThreepennyElectron 8023
+stack exec ThreepennyElectron 8023
 ```
 
-If you now navigate with your WebBrowser to `http://127.0.0.1:8023` you'll see the calculator in action.
+If you now navigate your WebBrowser to `http://127.0.0.1:8023` you'll see the calculator in action.
 
 The one thing missing is the Electron Integration to run our application as a real standalone app.
 
@@ -437,3 +437,10 @@ The trick was to define a prestart script in [package.json](package.json)
 ```
 
 This script simply does a `stack install --local-bin-path build`. This guarantees that the ThreepennyElectron binary is residing under `./build/ThreepennyElectron` as expected by the `main.js` script.
+
+With the following npm command you can create application package ready for deployment on all supported platforms:
+
+```bash
+npm run pack-all
+```
+
