@@ -41,16 +41,18 @@ setup win = void $ do
     ]
 
   let  
+      -- keys :: Event String
+      -- keys = fmap (UI.keypress outputBox) (: [])
       -- map buttons to labels. (buttonMap :: [(Element, String)] )
       buttonMap = zip (concat buttons) (concatMap (map fst) buttonLabels)
-      -- register mouse click events to all buttons. (anyClick :: Event String )
-      anyClick  = buttonClicks buttonMap
+      -- register mouse click events to all buttons. (clicks :: Event String )
+      clicks  = buttonClicks buttonMap
       -- use (populate :: String -> State -> State) to build a command that computes a 
-      -- calculator state transition (command :: Event (State -> State))
-      command   = fmap populate anyClick
+      -- calculator state transition (commands :: Event (State -> State))
+      commands  = fmap populate clicks
 
   -- calculate behaviour by accumulating all commands, starting with the initial state    
-  calcBehaviour <- accumB initialState command
+  calcBehaviour <- accumB initialState commands
   -- use Calc.display to extract the display string from the calculator state 
   let outText  = fmap display calcBehaviour
   -- write outText to the outputBox UI element
@@ -65,6 +67,8 @@ setup win = void $ do
 
     color :: Color -> String
     color = map toLower . show
+
+    
             
     buttonClicks :: [(Element, String)] -> Event String
     buttonClicks = foldr1 (UI.unionWith const) . map makeClick
