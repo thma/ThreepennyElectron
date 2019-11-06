@@ -1,5 +1,5 @@
 {
-  "name": "ThreepennyElectron",
+  "name": "threepenny-electron",
   "version": "1.0.0",
   "description": "A ThreepennyGUI + Electron based Pocket Calculator",
   "main": "main.js",

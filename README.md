@@ -254,7 +254,9 @@ In the next step we define the calculator buttons for digits, operations and com
 data Color = Grey | Orange | Brown | Black deriving (Show)
 ```
 
-We start with a list of lists of `(String, Color)` tuples `buttonLabels :: [[(String, Color)]]`. The outer list represents the rows, the inner list the columns in each row. The tuples represent the labels and colors we want to see on the calculator buttons.
+To understand this piece of code let's start at the end with `buttonLabels :: [[(String, Color)]]`: a list of lists of `(String, Color)` tuples. 
+The outer list represents the rows, the inner list the columns in each row. 
+The tuples represent the labels and colors we want to see on the calculator buttons.
 
 Mapping the function `mkButton` over the `buttonLabels` is then used to create the `buttons :: [[UI Element]]`. Where `mkButton` defines each button as a `UI.button`, assigns a css class `("ui " ++ color c ++ " button")` to it (using the `#.` combinator) and sets text and other attributes by using the `# set` combinator. 
 
@@ -264,7 +266,8 @@ To give an example the first element from `buttonLabels`: `(lbl $ Digit Seven, G
 <button class="ui grey button" value="7" type="button" style="min-width: 60px">7</button>
 ```
 
-As the last step of the layouting stage we glue everything together to a nice grid and place it as the HTML body into the DOM tree:
+As the last step of the layouting stage we glue everything together to a nice grid and place it as the HTML body into the DOM tree.
+Again we use css classes from the Semantic UI framework to create a pleasant look and feel:
 
 ```haskell
   UI.getBody win # set (attr "style") "overflow: hidden" #+
@@ -273,11 +276,11 @@ As the last step of the layouting stage we glue everything together to a nice gr
                     map (UI.row . map element) buttons]
     ]
 ```
+The resulting HTML looks like follows (for brevity I'm showing only everything up to the first row of buttons):
 
 ```html
 <body style="overflow: hidden">
 <noscript>Please enable JavaScript.</noscript>
-
 
 <div class="ui raised very padded text container segment">
     <table>

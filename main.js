@@ -1,8 +1,8 @@
-const {app, BrowserWindow} = require('electron');
-const freeport = require('freeport');
-const spawn    = require('child_process').spawn;
-const path     = require('path');
-const waitOn   = require('wait-on');
+import { app, BrowserWindow } from 'electron';
+import freeport               from 'freeport';
+import { spawn }              from 'child_process';
+import { join }               from 'path';
+import waitOn                 from 'wait-on';
 
  // Time to wait for Threepenny server, milliseconds
 const timeout = 10000;
@@ -47,7 +47,7 @@ freeport((err, port) => {
   // browser windows. Some APIs can only be used after this event occurs. We
   // start the child process and wait before loading the web page.
   app.on('ready', () => {
-    child = spawn(path.join(__dirname, relBin), [port]);
+    child = spawn(join(__dirname, relBin), [port]);
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
     child.stdout.on('data', console.log);

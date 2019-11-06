@@ -33,7 +33,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     - -Wall -fno-warn-unused-do-bind
-#    - -Werror
+    - -Werror
     dependencies:
     - ThreepennyElectron
     - threepenny-gui
