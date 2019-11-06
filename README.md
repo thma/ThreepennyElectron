@@ -329,7 +329,7 @@ This was everything we need to create the HTML UI as shown in the [screenshot](#
 
 Now we come to the interesting part of UI interaction. Threepenny comes with support for functional reactive programming based on the concepts of [reactive banana](https://wiki.haskell.org/Reactive-banana), a cool FRP framework by Heinrich Apfelmus.
 
-So I promise we will not see any old-skool event-handling in the following code:
+So I promise we will not see any old-school event-handling in the following code:
 
 ```haskell
   let  
@@ -355,7 +355,7 @@ So I promise we will not see any old-skool event-handling in the following code:
 ```
 
 We'll walk through this code from top to bottom.
-First `buttonMap` is defined as an associative list maaping all calculator buttons to their respective labels. 
+First `buttonMap` is defined as an associative list mapping all calculator buttons to their respective labels. 
 (We will use these labels to trigger calculator state transition with `populate label`).
 
 Next we define `clicks :: Event String`. `Event a` represents a stream of events as they occur in time.
