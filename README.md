@@ -100,7 +100,8 @@ data State = EnteringA     Entering                    -- entering A
            | Error         Double  String              -- A, Message
            deriving (Show, Eq)
 
-type Entering = (String, Bool) -- A tuple of the String representation of the entered digits and a flag signalling that **.** has already been pressed.
+type Entering = (String, Bool) -- A tuple of the String representation of the entered digits 
+                               -- and a flag signalling that **.** has already been pressed.
 ```
 
 Starting with an initial state 
@@ -327,6 +328,27 @@ This was everything we need to create the HTML UI as shown in the [screenshot](#
 ### Defining the application behaviour
 
 
+
+```haskell
+  -- create a list of tuples that map button Ui Elements to labels
+  let clicks   = buttonClicks (zip (concat buttons) (concatMap (map fst) buttonLabels))
+  -- link action
+      commands = fmap populate clicks
+
+  -- calculate behaviour by accumulating all button events, starting with the initial state    
+  calcBehaviour <- accumB initialState commands
+  -- use Calc.display to extract the display string from the calculator state 
+  let outText  = fmap display calcBehaviour
+  -- write outText to the outputBox UI element
+  element outputBox # sink value outText
+  where
+            
+    buttonClicks :: [(Element, String)] -> Event String
+    buttonClicks = foldr1 (UI.unionWith const) . map makeClick
+      where
+        makeClick (e, s) = UI.pure s <@ UI.click e
+
+```
 
 
 ## WIP

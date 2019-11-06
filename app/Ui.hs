@@ -40,13 +40,17 @@ setup win = void $ do
                     map (UI.row . map element) buttons]
     ]
 
-  -- link click events to buttons
-  let clicks   = buttonClicks (zip (concat buttons) (concatMap (map fst) buttonLabels))
-  -- link action
-      commands = fmap populate clicks
+  let  
+      -- map buttons to labels. (buttonMap :: [(Element, String)] )
+      buttonMap = zip (concat buttons) (concatMap (map fst) buttonLabels)
+      -- register mouse click events to all buttons. (anyClick :: Event String )
+      anyClick  = buttonClicks buttonMap
+      -- use (populate :: String -> State -> State) to build a command that computes a 
+      -- calculator state transition (command :: Event (State -> State))
+      command   = fmap populate anyClick
 
-  -- calculate behaviour by accumulating all button events, starting with the initial state    
-  calcBehaviour <- accumB initialState commands
+  -- calculate behaviour by accumulating all commands, starting with the initial state    
+  calcBehaviour <- accumB initialState command
   -- use Calc.display to extract the display string from the calculator state 
   let outText  = fmap display calcBehaviour
   -- write outText to the outputBox UI element
