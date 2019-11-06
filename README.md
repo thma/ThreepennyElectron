@@ -393,25 +393,47 @@ So once `calcBehaviour <- accumB initialState commands` did all the heavy liftin
   element outputBox # sink value outText
 ```
 
-## WIP
-----
+## Recap: what we've got so far
 
+Until now we have written a calculator as a Threepenny GUI application. We can build and execute it with the following stack commands: 
 
+```bash
+stack init
+stack install
+stank exec ThreepennyElectron 8023
+```
 
-electron integration:
-https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md
+If you now navigate with your WebBrowser to `http://127.0.0.1:8023` you'll see the calculator in action.
 
+The one thing missing is the Electron Integration to run our application as a real standalone app.
 
-howto:
+## Electron Integration
 
-- npm install
-- npm start   // this will also do a 'stack install --local-bin-path build' to build the haskell app
+### Providing a very straightforward wrapper script
 
+[Electron](https://electronjs.org/) is a popular JavaScript framework that allows to write cross platform desktop applications based on Chromium. Real world applications like [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/) or [Slack](https://slack.com/intl/de-de/downloads/windows) are good [examples of what can be achieved with it](https://electronjs.org/apps).
+
+As I already mentioned in the introduction, Heinrich Apfelmus already [created a tutorial](https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md) on how to write an electron wrapper around a Threepenny GUI application.
+
+Let's start with a short look at the [Javascript code in ](main.js).
+
+This script detects a free tcp/ip port on localhost and spawns the ThreepennyElectron applications as a separate processes. The free port is handed over to the ThreepennyELectron app as a commandline parameter.
+
+Once the ThreepennyElectron server is accepting connections we can safely open the application window and load the local url as it's content.
+
+### NPM handling
+
+To make things easier to handle I've improved the npm integration a bit. Once you have initialized stack with `stack init` you can build and run the calculator app (including the haskell backend) with just two npm commands:
+
+```bash
 npm install
+npm start
+```
 
+The trick was to define a prestart script in [package.json](package.json)
 
-npm install electron-packager
+```javascript
+"prestart": "node ./stack-install.js",
+```
 
-./node_modules/.bin/electron-packager .
-
-./node_modules/.bin/electron-packager . --ignore=app --ignore=src
+This script simply does a `stack install --local-bin-path build`. This guarantees that the ThreepennyElectron binary is residing under `./build/ThreepennyElectron` as expected by the `main.js` script.
