@@ -94,15 +94,17 @@ The state machine knows five different states:
 This is reflected in the following data type declaration:
 
 ```haskell
-data State = EnteringA     Entering                    -- entering A
-           | EnteredAandOp Double  Operation           -- A, Op
-           | EnteringB     Double  Operation Entering  -- A, Op, entering B
-           | Calculated    Double  Operation Double    -- A, Op, B
-           | Error         Double  String              -- A, Message
+-- | a data type representing all possible states of the calculator
+data State = EnteringA     Entering                   -- ^ entering register A
+           | EnteredAandOp Double  Operation          -- ^ A, Op
+           | EnteringB     Double  Operation Entering -- ^ A, Op, entering register B
+           | Calculated    Double  Operation Double   -- ^ A, Op, B
+           | Error         Double  String             -- ^ A, Message
            deriving (Show, Eq)
 
-type Entering = (String, Bool) -- A tuple of the String representation of the entered digits 
-                               -- and a flag signalling that **.** has already been pressed.
+-- | Entering is a tuple used while entering numbers. It consists of
+type Entering = (String, Bool) -- A tuple of the String representation of the entered digits
+                               -- and a flag signalling that Dot was already pressed.
 ```
 
 Starting with an initial state 
@@ -132,12 +134,38 @@ The `populate` function is defined as :
 
 ```haskell
 populate :: String -> State -> State
-populate i =
-  case parseInput i of
-    Digit x      -> addDigit x
-    Dot          -> addDot
-    Operation op -> applyOp  op
-    cmd          -> applyCmd cmd
+populate = processCommand . parseInput
+
+-- | process a calculator command. That is: compute a calculator state transition    
+processCommand :: Command -> State -> State
+processCommand cmd = case cmd of
+  Digit x      -> addDigit x
+  Dot          -> addDot
+  Operation op -> applyOp op
+  command      -> applyCmd command
+
+-- | parse a Command from an input string
+parseInput :: String -> Command
+parseInput x = case x of
+  "0"  -> Digit Zero
+  "1"  -> Digit One
+  "2"  -> Digit Two
+  "3"  -> Digit Three
+  "4"  -> Digit Four
+  "5"  -> Digit Five
+  "6"  -> Digit Six
+  "7"  -> Digit Seven
+  "8"  -> Digit Eight
+  "9"  -> Digit Nine
+  "."  -> Dot
+  "+"  -> Operation Add
+  "-"  -> Operation Sub
+  "*"  -> Operation Mul
+  "/"  -> Operation Div
+  "="  -> Flush
+  "C"  -> Clear
+  "CE" -> ClearError
+  _    -> undefined
 ```
 
 First the input is parsed to a Command. Based on the parsed Command 
@@ -388,8 +416,8 @@ accumB :: MonadIO m => a --^ the initial value
 So once `calcBehaviour <- accumB initialState commands` did all the heavy lifting we just have to extract the display text from the state and to render it in the outputBox:
 
 ```haskell
-  -- use Calc.display to extract the display string from the calculator state 
-  let outText  = fmap display calcBehaviour
+  -- use Calc.toString to extract the display string from the calculator state 
+  let outText  = fmap toString calcBehaviour
   -- write outText to the outputBox UI element
   element outputBox # sink value outText
 ```
@@ -421,6 +449,65 @@ Let's start with a short look at the [Javascript code in ](main.js).
 This script detects a free tcp/ip port on localhost and spawns the ThreepennyElectron applications as a separate processes. The free port is handed over to the ThreepennyELectron app as a commandline parameter.
 
 Once the ThreepennyElectron server is accepting connections we can safely open the application window and load the local url as it's content.
+
+````javascript
+// Relative path to the Threepenny binary.
+const relBin = './build/ThreepennyElectron';
+
+// Assign a random port to run on.
+freeport((err, port) => {
+  if (err) throw err;
+
+  const url = `http://localhost:${port}`;
+  let child = null; // the Threepenny Server process we will spawn
+
+  // Keep a global reference of the window object, if we don't, the window will
+  // be closed automatically when the JavaScript object is garbage collected.
+  let win;
+
+  // Called when Electron has finished initialization and is ready to create
+  // browser windows. Some APIs can only be used after this event occurs. We
+  // start the child process and wait before loading the web page.
+  app.on('ready', () => {
+    child = spawn(path.join(__dirname, relBin), [port]);
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
+    child.stdout.on('data', console.log);
+    child.stderr.on('data', console.log);
+    child.on('close', code =>
+      console.log(`Threepenny app exited with code ${code}`));
+
+    // Wait until the Threepenny server is ready for connections.
+    waitOn({ resources: [url], timeout }, (err_) => {
+      if (err_) throw err_;
+      createWindow();
+    });
+  });
+
+  function createWindow() {
+      // Create the browser window.
+      win = new BrowserWindow({
+          width: 470,
+          height: 370,
+          maximizable: false,
+          resizable: false,
+          icon: 'calc.ico',
+          title: '3PennyCalc...'
+      });
+
+      win.removeMenu();
+      console.log(`Loading URL: ${url}`);
+      win.loadURL(url);
+
+      // Emitted when the window is closed.
+      win.on('closed', () => {
+          // Dereference the window object for garbage collection.
+          win = null;
+      });
+  }
+
+});
+````
 
 ### NPM handling
 

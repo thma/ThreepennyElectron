@@ -20,9 +20,9 @@ data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine
 data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
 
 -- | a data type representing all possible states of the calculator (see [calculator section](README.md#the-calculator))
-data State = EnteringA     Entering                   -- ^ entering A
+data State = EnteringA     Entering                   -- ^ entering register A
            | EnteredAandOp Double  Operation          -- ^ A, Op
-           | EnteringB     Double  Operation Entering -- ^ A, Op, entering B
+           | EnteringB     Double  Operation Entering -- ^ A, Op, entering register B
            | Calculated    Double  Operation Double   -- ^ A, Op, B
            | Error         Double  String             -- ^ A, Message
            deriving (Show, Eq)
@@ -105,7 +105,7 @@ lbl c = case c of
   Clear         -> "C"
   ClearError    -> "CE"
 
--- | process a calculator command. That is compute a calculator state transition    
+-- | process a calculator command. That is: compute a calculator state transition    
 processCommand :: Command -> State -> State
 processCommand cmd = case cmd of
   Digit x      -> addDigit x

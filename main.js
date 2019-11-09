@@ -14,34 +14,11 @@ freeport((err, port) => {
   if (err) throw err;
 
   const url = `http://localhost:${port}`;
-  let child = null; // Server process we spawn and kill
+  let child = null; // the Threepenny Server process we will spawn
 
   // Keep a global reference of the window object, if we don't, the window will
   // be closed automatically when the JavaScript object is garbage collected.
   let win;
-
-  function createWindow() {
-    // Create the browser window.
-    win = new BrowserWindow({
-      width: 470,
-      height: 370,
-      maximizable: false,
-      resizable: false,
-      icon: 'calc.ico',
-      title: '3PennyCalc...',
-      webPreferences: { nodeIntegration: true },
-    });
-
-    win.removeMenu();
-    console.log(`Loading URL: ${url}`);
-    win.loadURL(url);
-
-    // Emitted when the window is closed.
-    win.on('closed', () => {
-      // Dereference the window object for garbage collection.
-      win = null;
-    });
-  }
 
   // Called when Electron has finished initialization and is ready to create
   // browser windows. Some APIs can only be used after this event occurs. We
@@ -61,6 +38,28 @@ freeport((err, port) => {
       createWindow();
     });
   });
+
+  function createWindow() {
+      // Create the browser window.
+      win = new BrowserWindow({
+          width: 470,
+          height: 370,
+          maximizable: false,
+          resizable: false,
+          icon: 'calc.ico',
+          title: '3PennyCalc...'
+      });
+
+      win.removeMenu();
+      console.log(`Loading URL: ${url}`);
+      win.loadURL(url);
+
+      // Emitted when the window is closed.
+      win.on('closed', () => {
+          // Dereference the window object for garbage collection.
+          win = null;
+      });
+  }
 
   // Quit when all windows are closed, unless on macOS. On macOS it is common
   // for applications and their menu bar to stay active until the user quits

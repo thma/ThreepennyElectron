@@ -9,7 +9,7 @@ import           Graphics.UI.Threepenny      hiding (map, start, Color, color )
 import qualified Graphics.UI.Threepenny      as UI
 import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 
-import           Calc                        (Command(..), Digit(..), Operation(..), --processCommand, parseInput, 
+import           Calc                        (Command(..), Digit(..), Operation(..), --processCommand, parseInput,
                                               populate, toString, initialState, lbl)
 import           Data.Char                   (toLower)
 
@@ -48,13 +48,13 @@ setup win = void $ do
       buttonMap = zip (concat buttons) (concatMap (map fst) buttonLabels)
       -- register mouse click events to all buttons. (clicks :: Event String )
       clicks  = buttonClicks buttonMap
-      -- use (populate :: String -> State -> State) to build a command that computes a 
+      -- use (populate :: String -> State -> State) to build a command that computes a
       -- calculator state transition (commands :: Event (State -> State))
       commands  = fmap populate clicks
 
   -- calculate behaviour by accumulating all commands, starting with the initial state    
   calcBehaviour <- accumB initialState commands
-  -- use Calc.toString to extract the display string from the calculator state 
+  -- use Calc.toString to extract the display string from the calculator state
   let outText  = fmap toString calcBehaviour
   -- write outText to the outputBox UI element
   element outputBox # sink value outText
