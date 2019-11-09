@@ -38,16 +38,16 @@ spec =
     it "maintains zeros as fractional digits" $
       populate "3" (populate "0" (EnteringA ("333.33",True))) `shouldBe` EnteringA ("333.3303",True)   
     it "can add numbers" $
-      display (compute "1 2 + 8 8 =") `shouldBe` "100.0"
+      toString (compute "1 2 + 8 8 =") `shouldBe` "100.0"
     it "can multiply numbers" $
-      display (compute "1 . 2 * 1 . 2 =") `shouldBe` "1.44"   
+      toString (compute "1 . 2 * 1 . 2 =") `shouldBe` "1.44"
     it "can substract numbers" $
-      display (compute "1 . 2 - 1 . 2 =") `shouldBe` "0.0"   
+      toString (compute "1 . 2 - 1 . 2 =") `shouldBe` "0.0"
     it "can divide numbers" $
-      display (compute "2 7 / 3 =") `shouldBe` "9.0"   
+      toString (compute "2 7 / 3 =") `shouldBe` "9.0"
     it "gives an error on division by zero" $
-      display (compute "2 7 / 0 =") `shouldBe` "Division by Zero!"     
+      toString (compute "2 7 / 0 =") `shouldBe` "Division by Zero!"
     it "computes sequences of operation" $
-      display (compute "2 + 2 + 2 + 2 * 8 = =") `shouldBe` "512.0"
+      toString (compute "2 + 2 + 2 + 2 * 8 = =") `shouldBe` "512.0"
     it "continues after error correction" $
-      display (compute "1 0 / 0 = EC / 2 =") `shouldBe` "5.0"     
+      toString (compute "1 0 / 0 = EC / 2 =") `shouldBe` "5.0"

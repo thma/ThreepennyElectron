@@ -82,7 +82,8 @@ The UI of the calculator is shown in the screenshot below. It features a display
 
 ### The calculator
 
-At the heart of an application sits the model. In this case the [calculator](src/Calc.hs). It is implemented as a simple state machine. The state machine knows five different states:
+At the heart of an application sits the model. In this case the [calculator](src/Calc.hs). It is implemented as a simple state machine. 
+The state machine knows five different states:
 
 1. Entering a number into the A register
 2. Finishing the entry of the first number by entering an Operation (+, -, *, /)
@@ -343,8 +344,8 @@ So I promise we will not see any old-school event-handling in the following code
 
   -- calculate behaviour by accumulating all commands, starting with the initial state    
   calcBehaviour <- accumB initialState commands
-  -- use Calc.display to extract the display string from the calculator state 
-  let outText  = fmap display calcBehaviour
+  -- use Calc.toString to extract the display string from the calculator state 
+  let outText  = fmap toString calcBehaviour
   -- write outText to the outputBox UI element
   element outputBox # sink value outText
   where

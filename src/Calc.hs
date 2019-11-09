@@ -1,34 +1,43 @@
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-} -- ensure that all possible Commands are covered in pattern matching
 module Calc (
     State(..),
-    populate, display, initialState, Operation(..), Command(..), Digit(..), lbl 
+    processCommand, parseInput, populate, toString, initialState, Operation(..), Command(..), Digit(..), lbl
     ) where
 
-data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
-
-data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
-
-data Command = Digit Digit
-             | Dot
-             | Operation Operation
-             | Flush | Clear | ClearError
+-- | a data type representing all possible Commands that can be executed by the Calculator
+data Command = Digit Digit         -- ^ a Digit
+             | Dot                 -- ^ a Dot
+             | Operation Operation -- ^ an arithmetic operation
+             | Flush               -- ^ evaluate the current operation (i.e. pressing '=')
+             | Clear               -- ^ clear the current calculator state
+             | ClearError          -- ^ clear the last error
              deriving (Show, Eq, Ord)
 
-type Entering = (String, Bool) -- A tuple of the String representation of the entered digits 
+-- | a data type representing all digits
+data Digit = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine deriving (Show, Eq, Ord)
+
+-- | a data type representing all possible arithmetic operations
+data Operation = Add | Sub | Mul | Div deriving (Show, Eq, Ord)
+
+-- | a data type representing all possible states of the calculator (see [calculator section](README.md#the-calculator))
+data State = EnteringA     Entering                   -- ^ entering A
+           | EnteredAandOp Double  Operation          -- ^ A, Op
+           | EnteringB     Double  Operation Entering -- ^ A, Op, entering B
+           | Calculated    Double  Operation Double   -- ^ A, Op, B
+           | Error         Double  String             -- ^ A, Message
+           deriving (Show, Eq)
+
+-- | Entering is a tuple used while entering numbers. It consists of
+type Entering = (String, Bool) -- A tuple of the String representation of the entered digits
                                -- and a flag signalling that Dot was already pressed.
 
-data State = EnteringA     Entering                   -- entering A
-           | EnteredAandOp Double  Operation          -- A, Op
-           | EnteringB     Double  Operation Entering -- A, Op, entering B
-           | Calculated    Double  Operation Double   -- A, Op, B
-           | Error         Double  String             -- A, Message
-           deriving (Show, Eq)
-  
+-- | the initial state of the calculator
 initialState :: State
 initialState = EnteringA ("0", False)
 
-display :: State -> String
-display s =
+-- | returns the String representation of a State
+toString :: State -> String
+toString s =
   case s of
     EnteringA     a     -> trim $ fst a
     EnteredAandOp a _   -> show a
@@ -36,18 +45,22 @@ display s =
     Calculated    a _ _ -> show a
     Error         _ msg -> msg
 
+-- | handle leading zero characters
 trim :: String -> String
 trim "0"           = "0"
 trim s@('0':'.':_) = s
 trim ('0':tl)      = tl
 trim x             = x
    
+-- | convert an Entering tuple to a Double   
 fromEntering :: Entering -> Double
 fromEntering = read . fst
 
+-- | convert a Double to an Entering tuple
 asEntering :: Double -> Entering
 asEntering x = (show x, x /= (fromInteger . truncate) x) 
 
+-- | parse a Command from an input string
 parseInput :: String -> Command
 parseInput x = case x of
   "0"  -> Digit Zero
@@ -70,6 +83,7 @@ parseInput x = case x of
   "CE" -> ClearError
   _    -> undefined
 
+-- | return the button label for a calculator Command
 lbl :: Command -> String
 lbl c = case c of
   Digit Zero    -> "0"
@@ -91,14 +105,19 @@ lbl c = case c of
   Clear         -> "C"
   ClearError    -> "CE"
 
-populate :: String -> State -> State
-populate i =
-  case parseInput i of
-    Digit x      -> addDigit x
-    Dot          -> addDot
-    Operation op -> applyOp op
-    cmd          -> applyCmd cmd
+-- | process a calculator command. That is compute a calculator state transition    
+processCommand :: Command -> State -> State
+processCommand cmd = case cmd of
+  Digit x      -> addDigit x
+  Dot          -> addDot
+  Operation op -> applyOp op
+  command      -> applyCmd command
 
+-- | a helper function that allows to parse a command from a string and then execute it
+populate :: String -> State -> State
+populate = processCommand . parseInput
+
+-- | add a digit
 addDigit :: Digit -> State -> State
 addDigit x s =
   case s of
@@ -114,6 +133,7 @@ addDigit x s =
     ccc "0" "0" = "0" -- avoid to create leading 0 digits
     ccc a b     = a ++ b
 
+-- | add a dot
 addDot :: State -> State
 addDot s =
   case s of
@@ -124,6 +144,7 @@ addDot s =
     dotted (a, False) = (a ++ ".", True)
     dotted (a, True) = (a, True)
 
+-- | try to evaluate the current operation
 tryToCalc :: Double -> Operation -> Double -- A op B
           -> (String -> a)                 -- error handler
           -> (Double -> a)                 -- result handler
@@ -137,6 +158,7 @@ tryToCalc a op  b _ mkResult =
             Div -> (/)
   in mkResult $ f a b
 
+-- | apply an arithmetic operation
 applyOp :: Operation -> State -> State
 applyOp op s =
   case s of
@@ -148,6 +170,7 @@ applyOp op s =
     (Calculated a _ _)  -> EnteredAandOp a op
     _ -> s
 
+-- | apply a unary command (C, CE, or =)
 applyCmd :: Command -> State -> State
 applyCmd cmd s =
   case (cmd, s) of

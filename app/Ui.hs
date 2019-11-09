@@ -9,7 +9,8 @@ import           Graphics.UI.Threepenny      hiding (map, start, Color, color )
 import qualified Graphics.UI.Threepenny      as UI
 import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 
-import           Calc                        (Command(..), Digit(..), Operation(..), populate, display, initialState, lbl)
+import           Calc                        (Command(..), Digit(..), Operation(..), --processCommand, parseInput, 
+                                              populate, toString, initialState, lbl)
 import           Data.Char                   (toLower)
 
 -- | main entry point from main.js launch script
@@ -53,8 +54,8 @@ setup win = void $ do
 
   -- calculate behaviour by accumulating all commands, starting with the initial state    
   calcBehaviour <- accumB initialState commands
-  -- use Calc.display to extract the display string from the calculator state 
-  let outText  = fmap display calcBehaviour
+  -- use Calc.toString to extract the display string from the calculator state 
+  let outText  = fmap toString calcBehaviour
   -- write outText to the outputBox UI element
   element outputBox # sink value outText
   where
