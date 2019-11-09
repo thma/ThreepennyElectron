@@ -9,8 +9,8 @@ import           Graphics.UI.Threepenny      hiding (map, start, Color, color )
 import qualified Graphics.UI.Threepenny      as UI
 import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 
-import           Calc                        (Command(..), Digit(..), Operation(..), --processCommand, parseInput,
-                                              populate, toString, initialState, lbl)
+import           Calc                        (Command(..), Digit(..), Operation(..), processCommand,
+                                             toString, initialState, lbl)
 import           Data.Char                   (toLower)
 
 -- | main entry point from main.js launch script
@@ -48,9 +48,9 @@ setup win = void $ do
       buttonMap = zip (concat buttons) (concatMap (map fst) buttonLabels)
       -- register mouse click events to all buttons. (clicks :: Event String )
       clicks  = buttonClicks buttonMap
-      -- use (populate :: String -> State -> State) to build a command that computes a
+      -- use (processCommand :: Command -> State -> State) to build a command that computes a
       -- calculator state transition (commands :: Event (State -> State))
-      commands  = fmap populate clicks
+      commands  = fmap processCommand clicks
 
   -- calculate behaviour by accumulating all commands, starting with the initial state    
   calcBehaviour <- accumB initialState commands
@@ -59,44 +59,42 @@ setup win = void $ do
   -- write outText to the outputBox UI element
   element outputBox # sink value outText
   where
-    mkButton :: (String, Color) -> UI Element
-    mkButton (s, c) =
-      UI.button #. ("ui " ++ color c ++ " button") 
-                # set text s # set value s 
-                # set (attr "type") "button" 
-                # set (attr "style") "min-width: 60px"
+    mkButton :: (Command, Color) -> UI Element
+    mkButton (cmd, clr) =
+      let s = lbl cmd
+      in  UI.button #. ("ui " ++ color clr ++ " button") 
+                    # set text s # set value s 
+                    # set (attr "type") "button" 
+                    # set (attr "style") "min-width: 60px"
 
     color :: Color -> String
     color = map toLower . show
-
-    
-            
-    buttonClicks :: [(Element, String)] -> Event String
+  
+    buttonClicks :: [(Element, Command)] -> Event Command
     buttonClicks = foldr1 (UI.unionWith const) . map makeClick
       where
-        makeClick (e, s) = UI.pure s <@ UI.click e
+        makeClick (e, cmd) = UI.pure cmd <@ UI.click e
                   
-    buttonLabels :: [[(String, Color)]]
+    buttonLabels :: [[(Command, Color)]]
     buttonLabels =
-      [ [(lbl $ Digit Seven, Grey), (lbl $ Digit Eight, Grey), (lbl $ Digit Nine, Grey),  (lbl   ClearError, Orange),   (lbl   Clear, Orange)]
-      , [(lbl $ Digit Four, Grey),  (lbl $ Digit Five, Grey),  (lbl $ Digit Six, Grey),   (lbl $ Operation Add, Brown), (lbl $ Operation Sub, Brown)]
-      , [(lbl $ Digit One, Grey),   (lbl $ Digit Two, Grey),   (lbl $ Digit Three, Grey), (lbl $ Operation Mul, Brown), (lbl $ Operation Div, Brown)]
-      , [(lbl   Dot, Grey),         (lbl $ Digit Zero, Grey),  (lbl   Flush, Black)] ]
+      [ [(Digit Seven, Grey), (Digit Eight, Grey), (Digit Nine,  Grey), (ClearError,   Orange), (Clear, Orange)]
+      , [(Digit Four,  Grey), (Digit Five,  Grey), (Digit Six,   Grey), (Operation Add, Brown), (Operation Sub, Brown)]
+      , [(Digit One,   Grey), (Digit Two,   Grey), (Digit Three, Grey), (Operation Mul, Brown), (Operation Div, Brown)]
+      , [(Dot,  Grey),        (Digit Zero,  Grey), (Flush, Black)] ]
 
 -- | Button colors
 data Color = Grey | Orange | Brown | Black deriving (Show)
 
 -- | convenience function that opens the 3penny UI in the default web browser
 launchSiteInBrowser:: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
-launchSiteInBrowser =
-    case os of
-    "mingw32" -> createProcess  (shell $ "start "    ++ url)
-    "darwin"  -> createProcess  (shell $ "open "     ++ url)
-    _         -> createProcess  (shell $ "xdg-open " ++ url)   
-    where url = "http://localhost:8023"
+launchSiteInBrowser = case os of
+  "mingw32" -> createProcess  (shell $ "start "    ++ url)
+  "darwin"  -> createProcess  (shell $ "open "     ++ url)
+  _         -> createProcess  (shell $ "xdg-open " ++ url)   
+  where url = "http://localhost:8023"
 
 -- | launch site automatically in default web browser
 up :: IO ()
 up = do
-    launchSiteInBrowser
-    start 8023
+  launchSiteInBrowser
+  start 8023
