@@ -85,9 +85,9 @@ The UI of the calculator is shown in the screenshot below. It features a display
 At the heart of an application sits the model. In this case the [calculator](src/Calc.hs). It is implemented as a simple state machine. 
 The state machine knows five different states:
 
-1. Entering a number into the A register
+1. Entering a number into the first register A
 2. Finishing the entry of the first number by entering an Operation (+, -, *, /)
-3. Entering a number into the second register
+3. Entering a number into the second register B
 4. Finishing the Operation of the second number by entering **=** or another arithmetic operation
 5. an Error state in case of divison by zero or by entering a wrong sequence of buttons 
 
@@ -114,7 +114,7 @@ initialState :: State
 initialState = EnteringA ("0", False)
 ```
 
-we can use the calculator by populating it with Button events:
+we can operate the calculator by populating it with Button events:
 
 ```haskell
 -- in GHCi:
@@ -266,34 +266,37 @@ In the next step we define the calculator buttons for digits, operations and com
   buttons   <- mapM (mapM mkButton) buttonLabels
 
   where
-    mkButton :: (String, Color) -> UI Element
-    mkButton (s, c) =
-      UI.button #. ("ui " ++ color c ++ " button") 
-                # set text s # set value s 
-                # set (attr "type") "button" 
-                # set (attr "style") "min-width: 60px"
+    mkButton :: (Command, Color) -> UI Element
+    mkButton (cmd, clr) =
+      let btnLabel = lbl cmd -- get the button text
+      in  UI.button #. ("ui " ++ color clr ++ " button")
+                    # set text btnLabel # set value btnLabel
+                    # set (attr "type")  "button"
+                    # set (attr "style") "min-width: 60px"
 
     color :: Color -> String
     color = map toLower . show
-                  
-    buttonLabels :: [[(String, Color)]]
-    buttonLabels =
-      [ [(lbl $ Digit Seven, Grey), (lbl $ Digit Eight, Grey), (lbl $ Digit Nine, Grey),  (lbl   ClearError, Orange),   (lbl   Clear, Orange)]
-      , [(lbl $ Digit Four, Grey),  (lbl $ Digit Five, Grey),  (lbl $ Digit Six, Grey),   (lbl $ Operation Add, Brown), (lbl $ Operation Sub, Brown)]
-      , [(lbl $ Digit One, Grey),   (lbl $ Digit Two, Grey),   (lbl $ Digit Three, Grey), (lbl $ Operation Mul, Brown), (lbl $ Operation Div, Brown)]
-      , [(lbl   Dot, Grey),         (lbl $ Digit Zero, Grey),  (lbl   Flush, Black)] ]
+
+    buttonDefinitions :: [[(Command, Color)]]
+    buttonDefinitions =
+      [ [(Digit Seven, Grey), (Digit Eight, Grey), (Digit Nine,  Grey), (ClearError,   Orange), (Clear,        Orange)]
+      , [(Digit Four,  Grey), (Digit Five,  Grey), (Digit Six,   Grey), (Operation Add, Brown), (Operation Sub, Brown)]
+      , [(Digit One,   Grey), (Digit Two,   Grey), (Digit Three, Grey), (Operation Mul, Brown), (Operation Div, Brown)]
+      , [(Dot,  Grey),        (Digit Zero,  Grey), (Flush, Black)] ]
 
 -- | Button colors
 data Color = Grey | Orange | Brown | Black deriving (Show)
 ```
 
-To understand this piece of code let's start at the end with `buttonLabels :: [[(String, Color)]]`: a list of lists of `(String, Color)` tuples. 
+To understand this piece of code let's start with `buttonDefinitions :: [[(Command, Color)]]`: a list of lists of `(Command, Color)` tuples. 
 The outer list represents the rows, the inner list the columns in each row. 
-The tuples represent the labels and colors we want to see on the calculator buttons.
+The tuples represent the button commands and colors we want to see on the calculator buttons.
 
-Mapping the function `mkButton` over the `buttonLabels` is then used to create the `buttons :: [[UI Element]]`. Where `mkButton` defines each button as a `UI.button`, assigns a css class `("ui " ++ color c ++ " button")` to it (using the `#.` combinator) and sets text and other attributes by using the `# set` combinator. 
+Mapping the function `mkButton` over the `buttonDefinitions` is then used to create the `buttons :: [[UI Element]]`. 
+Where `mkButton` defines each button as a `UI.button`, assigns a semantic.ui css class `("ui " ++ color c ++ " button")` 
+to it (using the `#.` combinator) and sets text and other attributes by using the `# set` combinator. 
 
-To give an example the first element from `buttonLabels`: `(lbl $ Digit Seven, Grey)` will be rendered in the HTML DOM as:
+To give an example the first element from `buttonDefinitions`: `(Digit Seven, Grey)` will be rendered in the HTML DOM as:
 
 ```html
 <button class="ui grey button" value="7" type="button" style="min-width: 60px">7</button>
@@ -362,39 +365,38 @@ So I promise we will not see any old-school event-handling in the following code
 
 ```haskell
   let  
-      -- map buttons to labels. (buttonMap :: [(Element, String)] )
-      buttonMap = zip (concat buttons) (concatMap (map fst) buttonLabels)
-      -- register mouse click events to all buttons. (clicks :: Event String )
+      -- map buttons to Command. (buttonMap :: [(Element, Command)] )
+      buttonMap = zip (concat buttons) (concatMap (map fst) buttonDefinitions)
+      -- register mouse click events to all buttons. (clicks :: Event Command )
       clicks  = buttonClicks buttonMap
-      -- use (populate :: String -> State -> State) to build a command that computes a 
+      -- use (processCommand :: Command -> State -> State) to build a command that computes a
       -- calculator state transition (commands :: Event (State -> State))
-      commands  = fmap populate clicks
+      commands  = fmap processCommand clicks
 
   -- calculate behaviour by accumulating all commands, starting with the initial state    
   calcBehaviour <- accumB initialState commands
-  -- use Calc.toString to extract the display string from the calculator state 
+  -- use Calc.toString to extract the display string from the calculator state
   let outText  = fmap toString calcBehaviour
   -- write outText to the outputBox UI element
   element outputBox # sink value outText
   where
-    buttonClicks :: [(Element, String)] -> Event String
+    buttonClicks :: [(Element, Command)] -> Event Command
     buttonClicks = foldr1 (UI.unionWith const) . map makeClick
       where
-        makeClick (e, s) = UI.pure s <@ UI.click e
+        makeClick (element, cmd) = UI.pure cmd <@ UI.click element
 ```
 
 We'll walk through this code from top to bottom.
-First `buttonMap` is defined as an associative list mapping all calculator buttons to their respective labels. 
-(We will use these labels to trigger calculator state transition with `populate label`).
+First `buttonMap` is defined as an associative list mapping all calculator buttons to their respective `Command`s. 
 
-Next we define `clicks :: Event String`. `Event a` represents a stream of events as they occur in time.
+Next we define `clicks :: Event Command`. Where `Event a` represents a stream of events as they occur in time.
 
 This `clicks` event stream is generated by applying `buttonClicks` to the button map we created in the first step. 
 
-So effectively each time a calculator button is clicked we receive the label of that button.
+So effectively each time a calculator button is clicked we receive the `Command` represented by the button.
 
-Now we use `populate` to generate calculator state transition commands based on each label in the stream. We have to use `fmap` to access the label in the `Event` container.
-The resulting type of commands is thus `commands :: Event (State -> State)`.
+Now we use `processCommand` to generate calculator state transition commands based on each label in the stream. We have to use `fmap` to access the command in the `Event` container.
+The resulting type of `commands` is thus `commands :: Event (State -> State)`.
 
 Now effectively `commands` is a stream of `(State -> State)` calculator state transitions.
 
@@ -433,6 +435,25 @@ stack exec ThreepennyElectron 8023
 ```
 
 If you now navigate your WebBrowser to `http://127.0.0.1:8023` you'll see the calculator in action.
+
+To ease the usage of this basic Threepenny application I have provided a short helper function `up` will automatically
+open the Threepenny application in your default web browser:
+
+````haskell
+-- | launch site automatically in default web browser
+up :: IO ()
+up = do
+  launchSiteInBrowser
+  start 8023
+
+-- | convenience function that opens the 3penny UI in the default web browser
+launchSiteInBrowser:: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
+launchSiteInBrowser = case os of
+  "mingw32" -> createProcess  (shell $ "start "    ++ url)
+  "darwin"  -> createProcess  (shell $ "open "     ++ url)
+  _         -> createProcess  (shell $ "xdg-open " ++ url)
+  where url = "http://localhost:8023"
+````
 
 The one thing missing is the Electron Integration to run our application as a real standalone app.
 
