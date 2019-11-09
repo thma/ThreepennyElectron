@@ -94,7 +94,7 @@ launchSiteInBrowser = case os of
   _         -> createProcess  (shell $ "xdg-open " ++ url)
   where url = "http://localhost:8023"
 
--- | launch site automatically in default web browser
+-- | launch application automatically in default web browser
 up :: IO ()
 up = do
   launchSiteInBrowser
