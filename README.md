@@ -16,6 +16,11 @@ npm install
 npm start
 ```
 
+Prerequisites:
+- [Git](https://git-scm.com/)
+- [Haskell Stack](https://docs.haskellstack.org/en/stable/README/)
+- [Nodejs](https://nodejs.org)
+
 ## Immature support for writing Desktop Applications in Haskell ?
 
 Since reading The GUI chapter in [Real World Haskell](http://book.realworldhaskell.org/read/gui-programming-with-gtk-hs.html) 
@@ -444,38 +449,45 @@ stack exec ThreepennyElectron 8023
 
 If you now navigate your WebBrowser to `http://127.0.0.1:8023` you'll see the calculator in action.
 
-To ease the usage of this basic Threepenny application I have provided a short helper function `up` which will automatically
+To ease the usage of this basic Threepenny application when working in GHCi I have provided a short helper function `up` which will automatically
 open the Threepenny application in your default web browser:
 
 ````haskell
--- | launch application automatically in default web browser
+-- | launch application in default web browser
 up :: IO ()
 up = do
-  launchSiteInBrowser
-  start 8023
+  let port = 8023
+  launchAppInBrowser port
+  start port
 
 -- | convenience function that opens the 3penny UI in the default web browser
-launchSiteInBrowser:: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
-launchSiteInBrowser = case os of
+launchAppInBrowser:: Int -> IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
+launchAppInBrowser port = case os of
   "mingw32" -> createProcess  (shell $ "start "    ++ url)
   "darwin"  -> createProcess  (shell $ "open "     ++ url)
   _         -> createProcess  (shell $ "xdg-open " ++ url)
-  where url = "http://localhost:8023"
+  where url = "http://localhost:" ++ show port
+
 ````
 
 ## Electron Integration
 
-The one thing missing is the Electron Integration to run our application as a real standalone app.
+So now we are able to execute our calculator as a local web application in our web browser.
+But our aim was to have a local standalone application that does not rely on a browser.
+
+That's where we bring in Electron to bundle the Threepenny GUI Haskell backend with a Chromium based fronted.
 
 ### Providing a very straightforward wrapper script
 
-[Electron](https://electronjs.org/) is a popular JavaScript framework that allows to write cross platform desktop applications based on Chromium. Real world applications like [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/) or [Slack](https://slack.com/intl/de-de/downloads/windows) are good [examples of what can be achieved with it](https://electronjs.org/apps).
+[Electron](https://electronjs.org/) is a popular JavaScript framework that allows to write cross platform desktop applications based on Chromium. 
+Real world applications like [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/) or [Slack](https://slack.com/intl/de-de/downloads/windows) are good [examples of what can be achieved with it](https://electronjs.org/apps).
 
 As I already mentioned in the introduction, Heinrich Apfelmus already [created a tutorial](https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md) on how to write an electron wrapper around a Threepenny GUI application.
 
 Let's start with a short look at the [Javascript code in ](main.js).
 
-This script detects a free tcp/ip port on localhost and spawns the ThreepennyElectron applications as a separate processes. The free port is handed over to the ThreepennyELectron app as a commandline parameter.
+This script detects a free tcp/ip port on localhost and spawns the ThreepennyElectron applications as a separate processes. 
+The free port is handed over to the ThreepennyELectron app as a commandline parameter.
 
 Once the ThreepennyElectron server is accepting connections we can safely open the application window and load the local url as it's content.
 

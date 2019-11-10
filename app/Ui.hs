@@ -80,22 +80,24 @@ setup win = void $ do
     buttonClicks :: [(Element, Command)] -> Event Command
     buttonClicks = foldr1 (UI.unionWith const) . map makeClick
       where
-        makeClick (element, cmd) = UI.pure cmd <@ UI.click element
+        makeClick (elmnt, cmd) = UI.pure cmd <@ UI.click elmnt
 
 
 -- | Button colors
 data Color = Grey | Orange | Brown | Black deriving (Show)
 
+-- | launch application in default web browser
+up :: IO ()
+up = do
+  let port = 8023
+  launchAppInBrowser port
+  start port
+
 -- | convenience function that opens the 3penny UI in the default web browser
-launchSiteInBrowser:: IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
-launchSiteInBrowser = case os of
+launchAppInBrowser:: Int -> IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
+launchAppInBrowser port = case os of
   "mingw32" -> createProcess  (shell $ "start "    ++ url)
   "darwin"  -> createProcess  (shell $ "open "     ++ url)
   _         -> createProcess  (shell $ "xdg-open " ++ url)
-  where url = "http://localhost:8023"
+  where url = "http://localhost:" ++ show port
 
--- | launch application automatically in default web browser
-up :: IO ()
-up = do
-  launchSiteInBrowser
-  start 8023
