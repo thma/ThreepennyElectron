@@ -62,7 +62,7 @@ My next thought was: It would be cool to use [Electron](https://electronjs.org/)
 frontend against the Threepenny Haskell backend. By making use of the [electron packager](https://www.npmjs.com/package/electron-packager) 
 this would allow to package platform specific standalone GUI application for Windows, MacOS and Linux. 
 
-I really got excited when I found out that Heinrich Apfelmus (the autor of Threppenny GUI) already had already  written a short 
+I really got excited when I found out that Jeremy Barisch-Rooney already had already written a short 
 [HOWTO document](https://github.com/HeinrichApfelmus/threepenny-gui/blob/master/doc/electron.md) that 
 explains the required steps to glue an ELectron frontend to a Threepenny backend.
 
