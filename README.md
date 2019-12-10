@@ -1,5 +1,6 @@
 # Writing Haskell native GUI Applications with Threepenny GUI and Electron.
 
+[![Actions Status](https://github.com/thma/ThreepennyElectron/workflows/Haskell%20CI/badge.svg)](https://github.com/thma/ThreepennyElectron/actions)
 [![Known Vulnerabilities](https://snyk.io/test/github/thma/ThreepennyElectron/badge.svg?targetFile=package.json)](https://snyk.io/test/github/thma/ThreepennyElectron?targetFile=package.json)
 
 ## tl;dr
