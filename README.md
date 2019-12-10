@@ -1,5 +1,7 @@
 # Writing Haskell native GUI Applications with Threepenny GUI and Electron.
 
+[![Known Vulnerabilities](https://snyk.io/test/github/thma/ThreepennyElectron/badge.svg?targetFile=package.json)](https://snyk.io/test/github/thma/ThreepennyElectron?targetFile=package.json)
+
 ## tl;dr
 
 Threepenny is an awesome Haskell library for creating browser based applications running on localhost.
