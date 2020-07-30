@@ -7,7 +7,7 @@ import           System.Process              (ProcessHandle, createProcess, shel
 import           Control.Monad               (void)
 import           Graphics.UI.Threepenny      hiding (map, start, Color, color )
 import qualified Graphics.UI.Threepenny      as UI
-import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
+--import           Graphics.UI.Threepenny.Core (defaultConfig, startGUI)
 
 import           Calc                        (Command(..), Digit(..), Operation(..), processCommand,
                                              toString, initialState, lbl)
