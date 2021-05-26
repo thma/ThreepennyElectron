@@ -1,11 +1,15 @@
 module Ui where
 
 import           GHC.IO.Handle.Types         (Handle)
+import System.FilePath                       (dropFileName)
+import System.Environment                    (getExecutablePath)
+
 import           System.Info                 (os)
 import           System.Process              (ProcessHandle, createProcess, shell)
 
 import           Control.Monad               (void)
 import           Graphics.UI.Threepenny      hiding (map, start, Color, color )
+
 import qualified Graphics.UI.Threepenny      as UI
 
 import           Calc                        (Command(..), Digit(..), Operation(..), processCommand,
@@ -14,9 +18,11 @@ import           Data.Char                   (toLower)
 
 -- | main entry point from main.js launch script
 start :: Int -> IO ()
-start port = startGUI defaultConfig
+start port = do
+  execPath <- dropFileName <$> getExecutablePath
+  startGUI defaultConfig
     { jsPort = Just port
-    , jsStatic = Just "static"
+    , jsStatic = Just $ execPath ++ "/static"
     } setup
 
 -- | setup window layout and event handling
