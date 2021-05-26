@@ -46,7 +46,7 @@ freeport((err, port) => {
           height: 370,
           maximizable: false,
           resizable: false,
-          // icon: 'calc.ico',
+          icon: 'calc.ico',
           title: '3PennyCalc...'
       });
 
