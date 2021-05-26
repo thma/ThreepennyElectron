@@ -30,3 +30,5 @@ package-lock.json
 out/
 build/
 ThreepennyElectron-win32-x64/
+ThreepennyElectron-darwin-x64/
+stack.yaml
