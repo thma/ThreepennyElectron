@@ -13,7 +13,7 @@ const relBin = './build/ThreepennyElectron';
 freeport((err, port) => {
   if (err) throw err;
 
-  const url = `http://localhost:${port}`;
+  const url = `http://127.0.0.1:${port}`;
   let child = null; // the Threepenny Server process we will spawn
 
   // Keep a global reference of the window object, if we don't, the window will
