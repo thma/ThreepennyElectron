@@ -33,6 +33,6 @@
   },
   "dependencies": {
     "freeport": "^1.0.5",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.2.0"
   }
 }
